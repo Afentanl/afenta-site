@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
+/* ===== Tema base (Tailwind v4) ===== */
+@theme {
+  /* Colores UI */
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+
+  /* Paleta Afenta */
+  --color-brand-violet: #7C3AED;      /* bg-brand-violet, text-brand-violet */
+  --color-brand-violet-700: #6D28D9;
+  --color-brand-gold: #FACC15;      /* bg-brand-gold, text-brand-gold */
+  --color-brand-gold-600: #EAB308;
+   /* Extras para degradado */
+  --color-fuchsia: #D946EF;
+  --color-rose: #FB7185;
+  
+  @keyframes shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+
+  /* Tipografías (opcional; puedes cambiarlas luego) */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+
+/* Modo claro por defecto */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Modo oscuro por CLASE (.dark en <html>) */
+.dark {
+  --color-background: #0B0B0E;
+  --color-foreground: #E5E5E5;
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Reset sencillo del body usando tokens */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-background text-foreground;
+  font-family: var(--font-sans);
 }
