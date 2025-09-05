@@ -1,60 +1,103 @@
+/* =========================================================
+    Tailwind v4
+   ========================================================= */
 @import "tailwindcss";
 
-/* ===== Tema base (Tailwind v4) ===== */
-@theme {
-  /* Colores UI */
+/* =========================================================
+    Tema (tokens) — SOLO una definición para claro y otra para oscuro
+   ========================================================= */
+
+/* Modo CLARO por defecto */
+:root {
   --color-background: #ffffff;
   --color-foreground: #171717;
+  color-scheme: light;
 
   /* Paleta Afenta */
-  --color-brand-violet: #7C3AED;      /* bg-brand-violet, text-brand-violet */
-  --color-brand-violet-700: #6D28D9;
-  --color-brand-gold: #FACC15;      /* bg-brand-gold, text-brand-gold */
-  --color-brand-gold-600: #EAB308;
-   /* Extras para degradado */
-  --color-fuchsia: #D946EF;
-  --color-rose: #FB7185;
-  
-  
+  --color-brand-violet: #7c3aed;     /* text-brand-violet, bg-brand-violet */
+  --color-brand-violet-700: #6d28d9;
+  --color-brand-gold:   #facc15;
+  --color-brand-gold-600:#eab308;
+  --color-fuchsia:      #d946ef;
+  --color-rose:         #fb7185;
 
-
-  /* Tipografías (opcional; puedes cambiarlas luego) */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  /* Fuentes (se alimentan desde next/font via CSS vars) */
+  --font-display: var(--font-display);
+  --font-sans:    var(--font-sans);
+  --font-mono:    var(--font-mono);
 }
 
-  @keyframes shine {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
-
-.dark { --color-background:#0B0B0E; --color-foreground:#E5E5E5; color-scheme: dark; }
-:root { --color-background:#ffffff; --color-foreground:#171717; color-scheme: light; }
-body { @apply bg-background text-foreground; }
-/* Modo claro por defecto */
-:root {
-  color-scheme: light;
-}
-
-/* Modo oscuro por CLASE (.dark en <html>) */
+/* Modo OSCURO cuando <html> tiene class="dark" (next-themes) */
 .dark {
-  --color-background: #0B0B0E;
-  --color-foreground: #E5E5E5;
+  --color-background: #0b0b0e;
+  --color-foreground: #e5e5e5;
   color-scheme: dark;
 }
 
-/* Reset sencillo del body usando tokens */
+/* Mapea los tokens de Tailwind (v4) a tus variables */
+@theme {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+
+  --color-brand-violet: var(--color-brand-violet);
+  --color-brand-violet-700: var(--color-brand-violet-700);
+  --color-brand-gold: var(--color-brand-gold);
+  --color-brand-gold-600: var(--color-brand-gold-600);
+  --color-fuchsia: var(--color-fuchsia);
+  --color-rose: var(--color-rose);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+/* =========================================================
+    Reseteo base
+   ========================================================= */
+html, body {
+  height: 100%;
+}
 body {
   @apply bg-background text-foreground;
   font-family: var(--font-sans);
 }
-/* ===== Texto con gradiente animado por letra ===== */
-@keyframes afentaWave {
-  0%   { background-position:   0% 0; }
-  100% { background-position: 100% 0; }
+
+/* Suavizado tipográfico (opcional) */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* base del gradiente (v4: usamos tokens) */
+/* =========================================================
+    Utilidades de marca / tipografía
+   ========================================================= */
+
+/* Titulares con la display font */
+.h-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+.h-tight { letter-spacing: -0.015em; }
+
+/* Sombra suave usada en logos/imágenes pequeñas */
+.shadow-soft {
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}
+
+/* Accesibilidad: esconder visual sin sacar del DOM */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* =========================================================
+    Efectos de texto “Afenta”
+   ========================================================= */
+@keyframes afentaWave {
+  0% { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
 .afenta-letter {
   background-image: linear-gradient(
     90deg,
@@ -68,35 +111,17 @@ body {
   background-clip: text;
   color: transparent;
   animation: afentaWave 3s linear infinite;
-  /* leve glow */
   filter: drop-shadow(0 2px 10px rgba(250,204,21,0.35));
 }
-
-/* opcional: versión dark un poco más intensa */
 .dark .afenta-letter {
   filter: drop-shadow(0 2px 12px rgba(250,204,21,0.45));
 }
 
-/* para accesibilidad, texto oculto visualmente */
-.visually-hidden {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px; overflow: hidden;
-  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-}
-
-/* ---- underline suave con gradiente Afenta ---- */
-.link-underline {
-  position: relative;
-  display: inline-block;
-}
-
+/* Links con subrayado + gradiente en hover */
+.link-underline { position: relative; display: inline-block; }
 .link-underline::after {
   content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
+  position: absolute; left: 0; right: 0; bottom: -2px;
   height: 2px;
   background-image: linear-gradient(
     90deg,
@@ -110,17 +135,12 @@ body {
   opacity: .95;
   border-radius: 999px;
 }
-
 .link-underline:hover::after,
-.link-underline:focus-visible::after {
-  transform: scaleX(1);
-}
-/* Texto con degradado SUAVE al hover (igual que el underline) */
+.link-underline:focus-visible::after { transform: scaleX(1); }
+
 .link-gradient {
   transition: color 220ms ease, -webkit-text-fill-color 220ms ease, background-position 380ms ease;
 }
-
-/* estado hover/focus: aplicamos gradient al texto */
 .link-gradient.is-active,
 .link-gradient:hover,
 .link-gradient:focus-visible {
@@ -134,22 +154,44 @@ body {
   background-position: 0% 50%;
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;            /* hace visible el gradiente */
+  color: transparent;
   -webkit-text-fill-color: transparent;
 }
-@media (prefers-reduced-motion: reduce) {
-  .animate-shine { animation: none !important; }
-}
-/* CTA gradiente loop */
-@keyframes ctaGradient {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+
+/* =========================================================
+   Animaciones compartidas
+   ========================================================= */
+@keyframes shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
-/* Sheen que cruza el botón */
+/* CTA — gradiente en loop + sheen */
+@keyframes ctaGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 @keyframes sheen {
-  0%   { background-position: -200% 0; }
-  50%  { background-position: 200% 0; }
+  0% { background-position: -200% 0; }
+  50% { background-position: 200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* FX del Hero (auroras) */
+@keyframes blobMove {
+  0% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(6%,-4%,0) scale(1.05); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+
+/* Respeto a usuarios con motion reducido */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shine,
+  .animate-ctaGradient,
+  .animate-sheen,
+  .animate-blobMove-12s,
+  .animate-blobMove-14s {
+    animation: none !important;
+  }
 }
