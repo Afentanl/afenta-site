@@ -1,139 +1,106 @@
 /* =========================================================
-    Tailwind v4
+   Tailwind v4 (config-less)
    ========================================================= */
 @import "tailwindcss";
 
 /* =========================================================
-    Tema (tokens) — SOLO una definición para claro y otra para oscuro
+   TOKENS DE TEMA (Light por defecto / Dark con .dark en <html>)
    ========================================================= */
 
-/* Modo CLARO por defecto */
+/* Light */
 :root {
-  --color-background: #ffffff;
-  --color-foreground: #171717;
   color-scheme: light;
 
-  /* Paleta Afenta */
-  --color-brand-violet: #7c3aed;     /* text-brand-violet, bg-brand-violet */
-  --color-brand-violet-700: #6d28d9;
-  --color-brand-gold:   #facc15;
-  --color-brand-gold-600:#eab308;
-  --color-fuchsia:      #d946ef;
-  --color-rose:         #fb7185;
+  /* UI tokens (base) */
+  --color-background: #ffffff;   /* fondo principal */
+  --color-foreground: #171717;   /* texto principal */
+  --color-surface:    #ffffff;   /* tarjetas/paneles */
+  --color-surface-2:  #f6f7fb;   /* tarjetas suaves */
+  --color-muted:      #4b5563;   /* texto secundario */
+  --color-ring:       rgba(17,24,39,.10); /* anillos/bordes suaves */
 
-  /* Fuentes (se alimentan desde next/font via CSS vars) */
+  /* Paleta Afenta */
+  --color-brand-violet:    #7c3aed;
+  --color-brand-violet-700:#6d28d9;
+  --color-brand-gold:      #facc15;
+  --color-brand-gold-600:  #eab308;
+  --color-fuchsia:         #d946ef;
+  --color-rose:            #fb7185;
+
+  /* Fuentes (inyectadas desde next/font con CSS vars) */
   --font-display: var(--font-display);
   --font-sans:    var(--font-sans);
   --font-mono:    var(--font-mono);
 }
 
-/* Modo OSCURO cuando <html> tiene class="dark" (next-themes) */
+/* Dark */
 .dark {
+  color-scheme: dark;
+
   --color-background: #0b0b0e;
   --color-foreground: #e5e5e5;
-  color-scheme: dark;
-}
-
-/* Mapea los tokens de Tailwind (v4) a tus variables */
-@theme {
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
-
-  --color-brand-violet: var(--color-brand-violet);
-  --color-brand-violet-700: var(--color-brand-violet-700);
-  --color-brand-gold: var(--color-brand-gold);
-  --color-brand-gold-600: var(--color-brand-gold-600);
-  --color-fuchsia: var(--color-fuchsia);
-  --color-rose: var(--color-rose);
-
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --color-surface:    #0f0f12;
+  --color-surface-2:  #12131a;
+  --color-muted:      #a1a1aa;
+  --color-ring:       rgba(255,255,255,.12);
 }
 
 /* =========================================================
-    Reseteo base
+    MAPEO A TAILWIND V4 (@theme) → permite usar bg-background, text-foreground, etc.
    ========================================================= */
-html, body {
-  height: 100%;
+@theme {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-surface:    var(--color-surface);
+  --color-surface-2:  var(--color-surface-2);
+  --color-muted:      var(--color-muted);
+  --color-ring:       var(--color-ring);
+
+  --color-brand-violet:     var(--color-brand-violet);
+  --color-brand-violet-700: var(--color-brand-violet-700);
+  --color-brand-gold:       var(--color-brand-gold);
+  --color-brand-gold-600:   var(--color-brand-gold-600);
+  --color-fuchsia:          var(--color-fuchsia);
+  --color-rose:             var(--color-rose);
+
+  --font-sans:    var(--font-sans);
+  --font-mono:    var(--font-mono);
 }
+
+/* =========================================================
+   BASE / RESET
+   ========================================================= */
+html, body { height: 100%; }
+
 body {
   @apply bg-background text-foreground;
   font-family: var(--font-sans);
-}
-
-/* Suavizado tipográfico (opcional) */
-html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* =========================================================
-    Utilidades de marca / tipografía
+   TIPOGRAFÍA / UTILIDADES DE MARCA
    ========================================================= */
+.h-display { font-family: var(--font-display); letter-spacing:-.02em; }
+.h-tight   { letter-spacing:-.015em; }
 
-/* Titulares con la display font */
-.h-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
-}
-.h-tight { letter-spacing: -0.015em; }
+.shadow-soft { box-shadow: 0 10px 22px rgba(0,0,0,.10); }
 
-/* Sombra suave usada en logos/imágenes pequeñas */
-.shadow-soft {
-  box-shadow: 0 10px 22px rgba(0,0,0,.10);
-}
-
-/* Accesibilidad: esconder visual sin sacar del DOM */
 .visually-hidden {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px; overflow: hidden;
-  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border:0;
 }
 
 /* =========================================================
-    Efectos de texto “Afenta”
+   LINKS PREMIUM (underline + texto gradiente al hover)
    ========================================================= */
-@keyframes afentaWave {
-  0% { background-position: 0% 0; }
-  100% { background-position: 100% 0; }
-}
-.afenta-letter {
-  background-image: linear-gradient(
-    90deg,
-    var(--color-brand-violet) 0%,
-    var(--color-fuchsia) 35%,
-    var(--color-brand-gold) 70%,
-    var(--color-brand-violet) 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: afentaWave 3s linear infinite;
-  filter: drop-shadow(0 2px 10px rgba(250,204,21,0.35));
-}
-.dark .afenta-letter {
-  filter: drop-shadow(0 2px 12px rgba(250,204,21,0.45));
-}
-
-/* Links con subrayado + gradiente en hover */
-.link-underline { position: relative; display: inline-block; }
+.link-underline { position: relative; display:inline-block; }
 .link-underline::after {
-  content: "";
-  position: absolute; left: 0; right: 0; bottom: -2px;
-  height: 2px;
-  background-image: linear-gradient(
-    90deg,
-    var(--color-brand-violet),
-    var(--color-fuchsia),
-    var(--color-brand-gold)
-  );
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 260ms ease;
-  opacity: .95;
-  border-radius: 999px;
+  content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px;
+  background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
+  transform: scaleX(0); transform-origin:left center; transition: transform 260ms ease;
+  opacity:.95; border-radius:999px;
 }
 .link-underline:hover::after,
 .link-underline:focus-visible::after { transform: scaleX(1); }
@@ -144,55 +111,125 @@ html {
 .link-gradient.is-active,
 .link-gradient:hover,
 .link-gradient:focus-visible {
-  background-image: linear-gradient(
-    90deg,
-    var(--color-brand-violet),
-    var(--color-fuchsia),
-    var(--color-brand-gold)
-  );
-  background-size: 200% 100%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
+  background-size: 200% 100%; background-position: 0% 50%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
 }
 
 /* =========================================================
-   Animaciones compartidas
+   EFECTO “AFENTA” POR LETRA (gradiente animado)
    ========================================================= */
-@keyframes shine {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
+@keyframes afentaWave { 0%{background-position:0% 0} 100%{background-position:100% 0} }
 
-/* CTA — gradiente en loop + sheen */
+.afenta-letter{
+  background-image: linear-gradient(90deg,var(--color-brand-violet) 0%,var(--color-fuchsia) 35%,var(--color-brand-gold) 70%,var(--color-brand-violet) 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation: afentaWave 3s linear infinite;
+  filter: drop-shadow(0 2px 10px rgba(250,204,21,.35));
+}
+.dark .afenta-letter{ filter: drop-shadow(0 2px 12px rgba(250,204,21,.45)); }
+
+/* =========================================================
+    ANIMACIONES COMPARTIDAS (CTA, sheen, blobs, shine)
+   ========================================================= */
 @keyframes ctaGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 @keyframes sheen {
-  0% { background-position: -200% 0; }
-  50% { background-position: 200% 0; }
-  100% { background-position: 200% 0; }
+  0%{background-position:-200% 0}
+  50%{background-position:200% 0}
+  100%{background-position:200% 0}
 }
-
-/* FX del Hero (auroras) */
+@keyframes shine {
+  0%{background-position:0% 50%}
+  100%{background-position:100% 50%}
+}
 @keyframes blobMove {
-  0% { transform: translate3d(0,0,0) scale(1); }
-  50% { transform: translate3d(6%,-4%,0) scale(1.05); }
-  100% { transform: translate3d(0,0,0) scale(1); }
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(6%,-4%,0) scale(1.05)}
+  100%{transform:translate3d(0,0,0) scale(1)}
 }
 
-/* Respeto a usuarios con motion reducido */
+/* Helpers para usarlas sin inline styles */
+.animate-cta-gradient { animation: ctaGradient 6s linear infinite; }
+.animate-sheen        { animation: sheen 3s ease-in-out infinite; }
+.animate-blob-12s     { animation: blobMove 12s ease-in-out infinite; }
+.animate-blob-14s     { animation: blobMove 14s ease-in-out infinite; }
+
+/* Respetar usuarios con reduce motion */
 @media (prefers-reduced-motion: reduce) {
-  .animate-shine,
-  .animate-ctaGradient,
+  .animate-cta-gradient,
   .animate-sheen,
-  .animate-blobMove-12s,
-  .animate-blobMove-14s {
+  .animate-blob-12s,
+  .animate-blob-14s {
     animation: none !important;
   }
-  
 }
+
+/* =========================================================
+    UTILIDADES DE TEMA (listas para reusar)
+   ========================================================= */
+
+/* superficies/bordes basados en tokens */
+.surface     { background: var(--color-surface);   color: var(--color-foreground); }
+.surface-2   { background: var(--color-surface-2); color: var(--color-foreground); }
+.text-muted  { color:      var(--color-muted); }
+.ring-token  { box-shadow: 0 0 0 1px var(--color-ring) inset; } /* útil p/ simular ring suave */
+
+/* Texto gradiente Afenta reusable (para títulos) */
+.text-gradient-afenta{
+  background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  background-size: 200% 100%;
+}
+
+/* Botón sólido Afenta (por si quieres clase directa) */
+.btn-afenta-solid{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
+  color:#fff; background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
+  background-size:300% 300%; animation: ctaGradient 6s linear infinite;
+  box-shadow: 0 10px 28px rgba(124,58,237,.35); transition: transform .3s ease, box-shadow .3s ease;
+}
+.dark .btn-afenta-solid{ color:#000; }
+.btn-afenta-solid:hover{ transform: scale(1.03); box-shadow: 0 16px 40px rgba(124,58,237,.55); }
+.btn-afenta-solid:active{ transform: scale(.95); }
+.btn-afenta-solid::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(120deg,transparent,rgba(255,255,255,.6),transparent);
+  background-size:200% 100%; animation: sheen 3s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* Botón outline degradado */
+.btn-afenta-outline{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
+  background: var(--color-surface); color: var(--color-foreground);
+  box-shadow: 0 6px 20px rgba(0,0,0,.08); transition: box-shadow .3s ease, transform .3s ease;
+}
+.btn-afenta-outline::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1;
+  background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
+}
+.btn-afenta-outline:hover{ box-shadow: 0 10px 28px rgba(0,0,0,.12); }
+.btn-afenta-outline:active{ transform: scale(.95); }
+@keyframes aurora {
+  0%   { filter: hue-rotate(0deg) blur(0px);    opacity:.9; }
+  50%  { filter: hue-rotate(25deg) blur(0.5px); opacity:1;  }
+  100% { filter: hue-rotate(0deg) blur(0px);    opacity:.9; }
+}
+.animate-aurora { animation: aurora 16s ease-in-out infinite; }
+/* Fondo: auroras suaves + fade helper */
+@keyframes aurora {
+  0%   { transform: translate3d(0,0,0) scale(1);   filter: hue-rotate(0deg);   opacity:.9; }
+  50%  { transform: translate3d(4%, -3%, 0) scale(1.03); filter: hue-rotate(20deg); opacity:1; }
+  100% { transform: translate3d(0,0,0) scale(1);   filter: hue-rotate(0deg);   opacity:.9; }
+}
+.animate-aurora { animation: aurora 16s ease-in-out infinite; }
+
+@keyframes fadeIn { from {opacity:0} to {opacity:1} }
+.animate-fade { animation: fadeIn .35s ease both; }
