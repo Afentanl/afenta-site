@@ -47,7 +47,10 @@ export default function Header() {
     useEffect(() => setMounted(true), []);
 
     return (
-    <header className="sticky top-0 z-50 backdrop-blur bg-background/80 border-b border-zinc-200 dark:border-zinc-800">
+    <header className="sticky top-0 z-50 backdrop-blur bg-background/80
+                    border-b-0
+                    shadow-[0_1px_0_0_rgba(0,0,0,.04)]
+                    dark:shadow-[0_1px_0_0_rgba(255,255,255,.06)]">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
         {/* Logo + marca (link a Home) */}
         <Link
