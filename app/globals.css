@@ -4,7 +4,7 @@
 @import "tailwindcss";
 
 /* =========================================================
-   TOKENS DE TEMA (Light por defecto / Dark con .dark en <html>)
+   TOKENS (Light por defecto / Dark con .dark en <html>)
    ========================================================= */
 
 /* Light */
@@ -12,22 +12,22 @@
   color-scheme: light;
 
   /* UI tokens (base) */
-  --color-background: #ffffff;   /* fondo principal */
-  --color-foreground: #171717;   /* texto principal */
-  --color-surface:    #ffffff;   /* tarjetas/paneles */
-  --color-surface-2:  #f6f7fb;   /* tarjetas suaves */
-  --color-muted:      #4b5563;   /* texto secundario */
-  --color-ring:       rgba(17,24,39,.10); /* anillos/bordes suaves */
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-surface:    #ffffff;
+  --color-surface-2:  #f6f7fb;
+  --color-muted:      #4b5563;
+  --color-ring:       rgba(17,24,39,.10);
 
   /* Paleta Afenta */
-  --color-brand-violet:    #7c3aed;
-  --color-brand-violet-700:#6d28d9;
-  --color-brand-gold:      #facc15;
-  --color-brand-gold-600:  #eab308;
-  --color-fuchsia:         #d946ef;
-  --color-rose:            #fb7185;
+  --color-brand-violet:     #7c3aed;
+  --color-brand-violet-700: #6d28d9;
+  --color-brand-gold:       #facc15;
+  --color-brand-gold-600:   #eab308;
+  --color-fuchsia:          #d946ef;
+  --color-rose:             #fb7185;
 
-  /* Fuentes (inyectadas desde next/font con CSS vars) */
+  /* Fuentes (inyectadas con next/font) */
   --font-display: var(--font-display);
   --font-sans:    var(--font-sans);
   --font-mono:    var(--font-mono);
@@ -46,7 +46,7 @@
 }
 
 /* =========================================================
-    MAPEO A TAILWIND V4 (@theme) → permite usar bg-background, text-foreground, etc.
+   MAPEO A TAILWIND V4 (@theme)
    ========================================================= */
 @theme {
   --color-background: var(--color-background);
@@ -63,15 +63,14 @@
   --color-fuchsia:          var(--color-fuchsia);
   --color-rose:             var(--color-rose);
 
-  --font-sans:    var(--font-sans);
-  --font-mono:    var(--font-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 /* =========================================================
    BASE / RESET
    ========================================================= */
 html, body { height: 100%; }
-
 body {
   @apply bg-background text-foreground;
   font-family: var(--font-sans);
@@ -80,11 +79,10 @@ body {
 }
 
 /* =========================================================
-   TIPOGRAFÍA / UTILIDADES DE MARCA
+   TIPOGRAFÍA / UTILIDADES
    ========================================================= */
 .h-display { font-family: var(--font-display); letter-spacing:-.02em; }
 .h-tight   { letter-spacing:-.015em; }
-
 .shadow-soft { box-shadow: 0 10px 22px rgba(0,0,0,.10); }
 
 .visually-hidden {
@@ -93,7 +91,7 @@ body {
 }
 
 /* =========================================================
-   LINKS PREMIUM (underline + texto gradiente al hover)
+   LINKS PREMIUM
    ========================================================= */
 .link-underline { position: relative; display:inline-block; }
 .link-underline::after {
@@ -117,10 +115,9 @@ body {
 }
 
 /* =========================================================
-   EFECTO “AFENTA” POR LETRA (gradiente animado)
+   EFECTO “AFENTA” POR LETRA
    ========================================================= */
 @keyframes afentaWave { 0%{background-position:0% 0} 100%{background-position:100% 0} }
-
 .afenta-letter{
   background-image: linear-gradient(90deg,var(--color-brand-violet) 0%,var(--color-fuchsia) 35%,var(--color-brand-gold) 70%,var(--color-brand-violet) 100%);
   background-size: 300% 100%;
@@ -131,7 +128,7 @@ body {
 .dark .afenta-letter{ filter: drop-shadow(0 2px 12px rgba(250,204,21,.45)); }
 
 /* =========================================================
-    ANIMACIONES COMPARTIDAS (CTA, sheen, blobs, shine)
+   ANIMACIONES (limpias y sin duplicados)
    ========================================================= */
 @keyframes ctaGradient {
   0%{background-position:0% 50%}
@@ -143,50 +140,57 @@ body {
   50%{background-position:200% 0}
   100%{background-position:200% 0}
 }
-@keyframes shine {
-  0%{background-position:0% 50%}
-  100%{background-position:100% 50%}
-}
 @keyframes blobMove {
   0%{transform:translate3d(0,0,0) scale(1)}
   50%{transform:translate3d(6%,-4%,0) scale(1.05)}
   100%{transform:translate3d(0,0,0) scale(1)}
 }
+/* aurora única */
+@keyframes auroraMove{
+  0%  { transform:translate3d(0,0,0) scale(1);   filter:hue-rotate(0deg);  opacity:.9; }
+  50% { transform:translate3d(4%,-3%,0) scale(1.03); filter:hue-rotate(20deg); opacity:1; }
+  100%{ transform:translate3d(0,0,0) scale(1);   filter:hue-rotate(0deg);  opacity:.9; }
+}
+.animate-aurora{ animation: auroraMove 14s ease-in-out infinite; }
 
-/* Helpers para usarlas sin inline styles */
+/* fade + grow helpers */
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.animate-fade{ animation: fadeIn .42s ease both; }
+@keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.grow-y{ transform-origin:bottom; animation: growY .6s ease-out both; }
+
+/* Helpers listas */
 .animate-cta-gradient { animation: ctaGradient 6s linear infinite; }
 .animate-sheen        { animation: sheen 3s ease-in-out infinite; }
 .animate-blob-12s     { animation: blobMove 12s ease-in-out infinite; }
 .animate-blob-14s     { animation: blobMove 14s ease-in-out infinite; }
 
-/* Respetar usuarios con reduce motion */
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-cta-gradient,
   .animate-sheen,
   .animate-blob-12s,
-  .animate-blob-14s {
-    animation: none !important;
-  }
+  .animate-blob-14s,
+  .animate-aurora,
+  .animate-fade,
+  .grow-y { animation: none !important; }
 }
 
 /* =========================================================
-    UTILIDADES DE TEMA (listas para reusar)
+   UTILIDADES DE TEMA
    ========================================================= */
-
-/* superficies/bordes basados en tokens */
 .surface     { background: var(--color-surface);   color: var(--color-foreground); }
 .surface-2   { background: var(--color-surface-2); color: var(--color-foreground); }
-.text-muted  { color:      var(--color-muted); }
-.ring-token  { box-shadow: 0 0 0 1px var(--color-ring) inset; } /* útil p/ simular ring suave */
+.text-muted  { color: var(--color-muted); }
+.ring-token  { box-shadow: 0 0 0 1px var(--color-ring) inset; }
 
-/* Texto gradiente Afenta reusable (para títulos) */
 .text-gradient-afenta{
   background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
   -webkit-background-clip:text; background-clip:text; color:transparent;
   background-size: 200% 100%;
 }
 
-/* Botón sólido Afenta (por si quieres clase directa) */
+/* Botones utilitarios (por si quieres usarlos como clases directas) */
 .btn-afenta-solid{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
   padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
@@ -200,11 +204,9 @@ body {
 .btn-afenta-solid::after{
   content:""; position:absolute; inset:0;
   background: linear-gradient(120deg,transparent,rgba(255,255,255,.6),transparent);
-  background-size:200% 100%; animation: sheen 3s ease-in-out infinite;
-  pointer-events:none;
+  background-size:200% 100%; animation: sheen 3s ease-in-out infinite; pointer-events:none;
 }
 
-/* Botón outline degradado */
 .btn-afenta-outline{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
   padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
@@ -217,19 +219,33 @@ body {
 }
 .btn-afenta-outline:hover{ box-shadow: 0 10px 28px rgba(0,0,0,.12); }
 .btn-afenta-outline:active{ transform: scale(.95); }
-@keyframes aurora {
-  0%   { filter: hue-rotate(0deg) blur(0px);    opacity:.9; }
-  50%  { filter: hue-rotate(25deg) blur(0.5px); opacity:1;  }
-  100% { filter: hue-rotate(0deg) blur(0px);    opacity:.9; }
+/* ============================
+   CONTENEDOR FLUIDO 2K / 4K
+   ============================ */
+.container-afenta {
+  width: 100%;
+  margin-inline: auto;
+  padding-left: 1rem;   /* px-4 */
+  padding-right: 1rem;
+  max-width: min(100%, 90rem); /* 1440px aprox */
 }
-.animate-aurora { animation: aurora 16s ease-in-out infinite; }
-/* Fondo: auroras suaves + fade helper */
-@keyframes aurora {
-  0%   { transform: translate3d(0,0,0) scale(1);   filter: hue-rotate(0deg);   opacity:.9; }
-  50%  { transform: translate3d(4%, -3%, 0) scale(1.03); filter: hue-rotate(20deg); opacity:1; }
-  100% { transform: translate3d(0,0,0) scale(1);   filter: hue-rotate(0deg);   opacity:.9; }
+@media (min-width: 640px) {   /* sm:px-6 */
+  .container-afenta { padding-left: 1.5rem; padding-right: 1.5rem; }
 }
-.animate-aurora { animation: aurora 16s ease-in-out infinite; }
+@media (min-width: 1536px) {  /* 2xl */
+  .container-afenta { max-width: min(100%, 100rem); } /* 1600px aprox */
+}
 
-@keyframes fadeIn { from {opacity:0} to {opacity:1} }
-.animate-fade { animation: fadeIn .35s ease both; }
+/* Alturas de header coherentes en todas las vistas */
+.header-h { height: 64px; }
+@media (min-width: 640px) { .header-h { height: 68px; } }
+
+/* Drawer móvil (sombras y backdrop) */
+.backdrop-afenta {
+  position: fixed; inset: 0; backdrop-filter: blur(6px);
+  background: color-mix(in oklab, var(--color-background) 70%, transparent);
+}
+
+/* Tipografía fluida sugerida (opcional, por si la quieres usar) */
+.text-fluid-title { font-size: clamp(1.75rem, 4.4vw, 2.5rem); line-height: 1.12; }
+.text-fluid-body  { font-size: clamp(.95rem, 1.2vw, 1.125rem); }

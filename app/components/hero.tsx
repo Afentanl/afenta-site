@@ -1,12 +1,24 @@
-/* eslint-disable @next/next/no-img-element */
+ 
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "./language-provider";
+import BackgroundFX from "./background-fx";
 
-/* ─── textos ─── */
+/* ──────────────────────────────────────────────────────────
+    CONTENEDOR REUSABLE (pégalo igual en header/servicios)
+   ────────────────────────────────────────────────────────── */
+import { CONTAINER } from "./layout";
+<div className={`relative z-10 ${CONTAINER} pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-16 sm:pb-20 md:pb-24`}>
+  {/* ...tu grid y todo lo demás sin tocar */}
+</div>
+;
+
+/* ──────────────────────────────────────────────────────────
+    TEXTOS (igual que tenías)
+   ────────────────────────────────────────────────────────── */
 const T = {
   en: {
     kicker: "Afenta — Brand · Websites · Performance",
@@ -62,7 +74,9 @@ const T = {
   },
 } as const;
 
-/* ─── CTA igual al del header (gradiente + sheen) ─── */
+/* ──────────────────────────────────────────────────────────
+   CTA (igual al del header)
+   ────────────────────────────────────────────────────────── */
 function BtnSolid({ children }: { children: React.ReactNode }) {
   return (
     <button
@@ -86,7 +100,30 @@ function BtnSolid({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ─── helpers de charts (SVG) ─── */
+/* ──────────────────────────────────────────────────────────
+   HOOK: Count-up para KPIs
+   ────────────────────────────────────────────────────────── */
+function useCountUp(target: number, duration = 700, deps: React.DependencyList = []) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    const start = 0;
+    const t0 = performance.now();
+    let raf = 0;
+    const loop = (now: number) => {
+      const p = Math.min(1, (now - t0) / duration);
+      setVal(Math.round(start + (target - start) * p));
+      if (p < 1) raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+  return val;
+}
+
+/* ──────────────────────────────────────────────────────────
+  CHART HELPERS (SVG) — igual que tenías
+   ────────────────────────────────────────────────────────── */
 function TinyBars({ bars }: { bars: number[] }) {
   const max = Math.max(...bars);
   return (
@@ -101,20 +138,26 @@ function TinyBars({ bars }: { bars: number[] }) {
       {bars.map((v, i) => {
         const h = (v / (max || 1)) * 52;
         const x = 8 + i * 16;
-        return <rect key={i} x={x} y={56 - h} width="10" height={h} rx="2" fill="url(#gradBar)" />;
+        return (
+          <g key={i} className="grow-y">
+            <rect x={x} y={56 - h} width="10" height={h} rx="2" fill="url(#gradBar)" />
+          </g>
+        );
       })}
     </svg>
   );
 }
 
 function TinyLine({ points, height = 56 }: { points: number[]; height?: number }) {
-  const W = 120, H = height;
-  const max = Math.max(...points), min = Math.min(...points);
+  const W = 120,
+    H = height;
+  const max = Math.max(...points),
+    min = Math.min(...points);
   const step = W / (points.length - 1 || 1);
   const y = (v: number) => H - ((v - min) / (max - min || 1)) * (H - 8) - 4;
   const d = points.map((v, i) => `${i ? "L" : "M"} ${i * step} ${y(v)}`).join(" ");
   return (
-    <svg viewBox={`0 0 120 ${H}`} className={`w-full`} style={{ height: H }}>
+    <svg viewBox={`0 0 120 ${H}`} className="w-full" style={{ height: H }}>
       <defs>
         <linearGradient id="gradLine" x1="0" x2="1" y1="0" y2="0">
           <stop offset="0%" stopColor="var(--color-brand-violet)" />
@@ -129,7 +172,10 @@ function TinyLine({ points, height = 56 }: { points: number[]; height?: number }
 
 function TinyDonut({ value }: { value: number }) {
   const pct = Math.max(4, Math.min(96, value));
-  const C = 18, R = 14, P = 2 * Math.PI * R, stroke = (pct / 100) * P;
+  const C = 18,
+    R = 14,
+    P = 2 * Math.PI * R,
+    stroke = (pct / 100) * P;
   return (
     <svg viewBox="0 0 36 36" className="h-12 w-12">
       <defs>
@@ -155,24 +201,58 @@ function TinyDonut({ value }: { value: number }) {
   );
 }
 
-/* ─── Mock con tabs + autorotate con pausa ─── */
+/* ──────────────────────────────────────────────────────────
+   MOCK con tabs + autorotate + animaciones (tal cual)
+   ────────────────────────────────────────────────────────── */
 type Tab = "all" | "ads" | "web";
-const DATA: Record<Tab, {
-  leads: number; cpa: number; cr: number;
-  conv: number; bars: number[]; brand: number[]; trend: number[];
-}> = {
-  all: { leads: 312, cpa: -43, cr: 18, conv: 216, bars: [12,16,22,26,28,30,26], brand: [8,10,9,11,12,11,13], trend: [12,17,15,20,18,22,27,25,28,26,30,29,31,34] },
-  ads: { leads: 420, cpa: -41, cr: 22, conv: 260, bars: [10,13,18,22,23,25,21], brand: [6,7,8,9,10,9,11],     trend: [10,12,14,16,18,17,19,22,24,23,25,27,28,29] },
-  web: { leads: 180, cpa: -22, cr: 14, conv: 140, bars: [8,10,12,14,18,20,18],   brand: [5,6,6,7,7,8,9],       trend: [6,8,9,10,12,11,13,14,16,17,18,19,19,20] },
+const DATA: Record<
+  Tab,
+  {
+    leads: number;
+    cpa: number;
+    cr: number;
+    conv: number;
+    bars: number[];
+    brand: number[];
+    trend: number[];
+  }
+> = {
+  all: {
+    leads: 312,
+    cpa: -43,
+    cr: 18,
+    conv: 216,
+    bars: [12, 16, 22, 26, 28, 30, 26],
+    brand: [8, 10, 9, 11, 12, 11, 13],
+    trend: [12, 17, 15, 20, 18, 22, 27, 25, 28, 26, 30, 29, 31, 34],
+  },
+  ads: {
+    leads: 420,
+    cpa: -41,
+    cr: 22,
+    conv: 260,
+    bars: [10, 13, 18, 22, 23, 25, 21],
+    brand: [6, 7, 8, 9, 10, 9, 11],
+    trend: [10, 12, 14, 16, 18, 17, 19, 22, 24, 23, 25, 27, 28, 29],
+  },
+  web: {
+    leads: 180,
+    cpa: -22,
+    cr: 14,
+    conv: 140,
+    bars: [8, 10, 12, 14, 18, 20, 18],
+    brand: [5, 6, 6, 7, 7, 8, 9],
+    trend: [6, 8, 9, 10, 12, 11, 13, 14, 16, 17, 18, 19, 19, 20],
+  },
 };
 
 function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
-  const order: Tab[] = useMemo(() => ["all","ads","web"], []);
+  const order: Tab[] = useMemo(() => ["all", "ads", "web"], []);
   const [tab, setTab] = useState<Tab>("all");
   const [pausedUntil, setPausedUntil] = useState<number>(0);
   const timer = useRef<number | null>(null);
 
-  // autorotate (más rápido)
+  // autorotate
   useEffect(() => {
     const tick = () => {
       if (Date.now() < pausedUntil) return;
@@ -182,17 +262,32 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
       });
     };
     timer.current = window.setInterval(tick, 4000);
-    return () => { if (timer.current) clearInterval(timer.current); };
+    return () => {
+      if (timer.current) clearInterval(timer.current);
+    };
   }, [order, pausedUntil]);
 
   const pause = (ms: number) => setPausedUntil(Date.now() + ms);
+
   const ds = DATA[tab];
+
+  // valores animados por KPI
+  const leadsAnim = useCountUp(ds.leads, 700, [tab, ds.leads]);
+  const cpaAnim = useCountUp(Math.abs(ds.cpa), 700, [tab, ds.cpa]);
+  const crAnim = useCountUp(ds.cr, 700, [tab, ds.cr]);
 
   return (
     <div
-      className="rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] overflow-hidden"
+      className="relative rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] overflow-hidden"
       onMouseEnter={() => pause(10_000)}
     >
+      {/* “cromado” exterior del mock */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[.18]
+                   bg-[radial-gradient(90%_140%_at_0%_0%,rgba(124,58,237,.35),transparent_60%),radial-gradient(90%_140%_at_100%_100%,rgba(250,204,21,.28),transparent_60%)]"
+      />
+
       {/* Header */}
       <div className="px-4 py-3 border-b border-[var(--color-ring)] relative">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_120%_at_0%_0%,rgba(124,58,237,.12),transparent),radial-gradient(60%_120%_at_100%_50%,rgba(250,204,21,.12),transparent)]" />
@@ -204,7 +299,9 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
               width={24}
               height={24}
               className="h-6 w-6 rounded-full hidden sm:block"
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+              }}
             />
             <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)] sm:hidden" />
             <div className="leading-tight">
@@ -216,18 +313,23 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           </div>
 
           <div className="hidden sm:flex items-center gap-2" role="tablist" aria-label="Mock tabs">
-            {(["all","ads","web"] as Tab[]).map((k) => {
-              const active = tab===k;
+            {(["all", "ads", "web"] as Tab[]).map((k) => {
+              const active = tab === k;
               return (
                 <button
                   key={k}
                   role="tab"
                   aria-selected={active}
-                  onClick={() => { setTab(k); pause(10_000); }}
+                  onClick={() => {
+                    setTab(k);
+                    pause(10_000);
+                  }}
                   className={`px-3 py-1.5 text-xs rounded-lg ring-1 ring-[var(--color-ring)] cursor-pointer transition-all
-                    ${active
-                      ? "bg-[var(--color-surface-2)] text-[var(--color-text)] shadow-[0_6px_14px_rgba(0,0,0,.08)]"
-                      : "bg-[var(--color-surface-2)]/70 text-[var(--color-text)]/80 hover:bg-[var(--color-surface-2)] hover:translate-y-[0.5px] active:translate-y-[1px]"}`}
+                    ${
+                      active
+                        ? "bg-[var(--color-surface-2)] text-[var(--color-text)] shadow-[0_6px_14px_rgba(0,0,0,.08)]"
+                        : "bg-[var(--color-surface-2)]/70 text-[var(--color-text)]/80 hover:bg-[var(--color-surface-2)] hover:translate-y-[0.5px] active:translate-y-[1px]"
+                    }`}
                 >
                   {t.tabs[k]}
                 </button>
@@ -238,17 +340,20 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
       </div>
 
       {/* Body */}
-      {/* KPIs (fade al cambiar) */}
       <div className="p-4 grid grid-cols-12 gap-4">
+        {/* KPIs (count-up + fade) */}
         <div className="col-span-12 md:col-span-5 grid grid-cols-1 gap-3 animate-fade" key={`kpi-${tab}`}>
           {[
-            { l: t.kpiLeads, v: `+${ds.leads}` },
-            { l: t.kpiCPA,   v: `${ds.cpa}%` },
-            { l: t.kpiCR,    v: `+${ds.cr}%` },
+            { l: t.kpiLeads, v: `+${leadsAnim}`, key: "leads" },
+            { l: t.kpiCPA, v: `-${cpaAnim}%`, key: "cpa" },
+            { l: t.kpiCR, v: `+${crAnim}%`, key: "cr" },
           ].map((k) => (
             <div
-              key={k.l}
-              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[color:var(--color-surface-2)] text-[var(--color-text)] flex flex-col justify-between"
+              key={k.key}
+              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)]
+                         bg-[color:var(--color-surface-2)] text-[var(--color-text)]
+                         flex flex-col justify-between"
+              onMouseEnter={() => pause(4000)}
             >
               <div className="text-[11px] text-[var(--color-muted)] leading-tight">{k.l}</div>
               <div className="text-[20px] font-extrabold leading-none">{k.v}</div>
@@ -256,28 +361,39 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           ))}
         </div>
 
-        {/* Trend alto + fade visible */}
-        <div className="col-span-12 md:col-span-7 rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-3 md:p-4 animate-fade" key={`trend-${tab}`}>
-          <TinyLine points={ds.trend} height={84} />
-          <div className="text-[11px] text-[var(--color-muted)] mt-1">{t.trend}</div>
+        {/* Trend alto + centrado */}
+        <div
+          className="col-span-12 md:col-span-7 rounded-xl ring-1 ring-[var(--color-ring)]
+                     bg-[var(--color-surface-2)] p-4 md:p-5 animate-fade
+                     flex flex-col items-center justify-center h-[140px]"
+          key={`trend-${tab}`}
+        >
+          <div className="w-full max-w-[95%]">
+            <TinyLine points={ds.trend} height={96} />
+          </div>
+          <div className="text-[11px] text-[var(--color-muted)] mt-1 text-center">{t.trend}</div>
         </div>
 
-        {/* Cards inferiores (fade) */}
+        {/* Cards inferiores */}
         <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 animate-fade" key={`cards-${tab}`}>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
             <div className="text-sm font-semibold text-[var(--color-text)]">{t.conv}</div>
             <div className="mt-3 flex items-center gap-3">
-              <TinyDonut value={Math.min(100, Math.round((ds.conv/300)*100))} />
+              <TinyDonut value={Math.min(100, Math.round((ds.conv / 300) * 100))} />
               <div className="text-2xl font-extrabold text-[var(--color-text)]">+{ds.conv}</div>
             </div>
           </div>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
             <div className="text-sm font-semibold text-[var(--color-text)]">{t.sales}</div>
-            <div className="mt-2"><TinyBars bars={ds.bars} /></div>
+            <div className="mt-2">
+              <TinyBars bars={ds.bars} />
+            </div>
           </div>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
             <div className="text-sm font-semibold text-[var(--color-text)]">{t.brand}</div>
-            <div className="mt-2"><TinyLine points={ds.brand} /></div>
+            <div className="mt-2">
+              <TinyLine points={ds.brand} />
+            </div>
           </div>
         </div>
       </div>
@@ -296,7 +412,9 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
   );
 }
 
-/* ─── UI hints (scroll / back-to-top) ─── */
+/* ──────────────────────────────────────────────────────────
+   UI HINTS (igual)
+   ────────────────────────────────────────────────────────── */
 function SmartNavHints() {
   const [showCue, setShowCue] = useState(true);
   const [showTop, setShowTop] = useState(false);
@@ -340,50 +458,72 @@ function SmartNavHints() {
   );
 }
 
-/* ─── HERO ─── */
+/* ──────────────────────────────────────────────────────────
+   HERO (ajustes mobile + 4K)
+   ────────────────────────────────────────────────────────── */
 export default function Hero() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
   return (
-    <section id="home" className="relative min-h-[88vh] overflow-hidden">
-      {/* Fondo: dots + auroras animadas (visible en light/dark) */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0
-                        bg-[radial-gradient(circle_at_1px_1px,rgba(0,0,0,.06)_1px,transparent_1px)]
-                        [background-size:16px_16px]
-                        dark:bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,.06)_1px,transparent_1px)]" />
-        <div className="absolute inset-0 animate-aurora
-                        bg-[radial-gradient(60%_45%_at_18%_20%,rgba(124,58,237,.18),transparent_62%),radial-gradient(60%_48%_at_85%_85%,rgba(250,204,21,.16),transparent_60%)]
-                        dark:bg-[radial-gradient(60%_45%_at_18%_20%,rgba(124,58,237,.14),transparent_62%),radial-gradient(60%_48%_at_85%_85%,rgba(250,204,21,.12),transparent_60%)]" />
-      </div>
+    <section
+      id="home"
+      className="
+        relative isolate overflow-hidden
+        min-h-[92svh] md:min-h-[88svh]
+      "
+    >
+      {/* Fondo global */}
+      <BackgroundFX />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 pb-32 md:pt-32">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-          {/* Izquierda (sin cursor de texto) */}
-          <div className="md:col-span-7 [cursor:default]">
-            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
+      {/* contenedor FLUIDO y reusabe */}
+      <div className={`relative z-10 ${CONTAINER} pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-16 sm:pb-20 md:pb-24`}>
+        <div className="grid items-start grid-cols-1 lg:grid-cols-12 gap-y-12 sm:gap-y-14 lg:gap-x-10 xl:gap-x-14">
+          {/* MOCK primero en móvil para que se vea arriba; luego texto en desktop */}
+          <div className="lg:col-span-5 order-first lg:order-none">
+            <div className="mx-auto w-[min(94%,28rem)] sm:w-[min(88%,32rem)] lg:w-full lg:max-w-[32rem] xl:max-w-[36rem]">
+              <Mock t={t} />
+            </div>
+          </div>
+
+          {/* Izquierda (copy) */}
+          <div className="lg:col-span-7 [cursor:default]">
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs sm:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
               {t.kicker}
             </div>
 
-            <h1 className="mt-4 h-display text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.18] md:leading-[1.22] pb-2 bg-gradient-to-r from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)] bg-clip-text text-transparent drop-shadow-[0_8px_28px_rgba(124,58,237,.22)]">
+            {/* Tipografía fluida (clamp) → se ve bien en móvil y 4K */}
+            <h1 className="mt-4 h-display font-extrabold tracking-tight text-[clamp(2rem,6vw,3.75rem)] leading-[1.12] md:leading-[1.18] pb-2 bg-gradient-to-r from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)] bg-clip-text text-transparent drop-shadow-[0_8px_28px_rgba(124,58,237,.22)]">
               {t.title}
             </h1>
 
-            <p className="mt-6 text-base md:text-lg text-[var(--color-muted)] max-w-[44ch]">
+            <p className="mt-5 text-[clamp(.95rem,1.2vw,1.125rem)] text-[var(--color-muted)] max-w-prose">
               {t.subtitle}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="#contact"><BtnSolid>{t.primary}</BtnSolid></Link>
-              <Link href="#cases"><BtnSolid>{t.secondary}</BtnSolid></Link>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link href="#contact">
+                <BtnSolid>{t.primary}</BtnSolid>
+              </Link>
+              <Link href="#cases">
+                <BtnSolid>{t.secondary}</BtnSolid>
+              </Link>
             </div>
 
             {/* Métricas */}
             <div className="mt-8 grid grid-cols-3 max-w-md gap-4 text-sm">
-              <div><div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat1}</div><div className="text-[var(--color-muted)]">{t.stat1Label}</div></div>
-              <div><div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat2}</div><div className="text-[var(--color-muted)]">{t.stat2Label}</div></div>
-              <div><div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat3}</div><div className="text-[var(--color-muted)]">{t.stat3Label}</div></div>
+              <div>
+                <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat1}</div>
+                <div className="text-[var(--color-muted)]">{t.stat1Label}</div>
+              </div>
+              <div>
+                <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat2}</div>
+                <div className="text-[var(--color-muted)]">{t.stat2Label}</div>
+              </div>
+              <div>
+                <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat3}</div>
+                <div className="text-[var(--color-muted)]">{t.stat3Label}</div>
+              </div>
             </div>
 
             {/* Logos */}
@@ -397,13 +537,16 @@ export default function Hero() {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Derecha */}
-          <div className="md:col-span-5 relative min-h-[420px]">
-            <div className="absolute right-0 top-0 w-[88%]">
-              <Mock t={t} />
-            </div>
-          </div>
+        {/* Separador hacia Servicios */}
+        <div className="mt-12 md:mt-16">
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--color-ring)] to-transparent" />
+          <div
+            className="mx-auto mt-4 h-10 w-10/12 rounded-[24px]
+                        bg-[radial-gradient(60%_60%_at_50%_0%,rgba(124,58,237,.12),transparent_60%)]
+                        dark:bg-[radial-gradient(60%_60%_at_50%_0%,rgba(124,58,237,.18),transparent_60%)]"
+          />
         </div>
       </div>
 
