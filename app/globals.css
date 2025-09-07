@@ -46,7 +46,7 @@
 }
 
 /* =========================================================
-   MAPEO A TAILWIND V4 (@theme)
+    MAPEO A TAILWIND V4 (@theme)
    ========================================================= */
 @theme {
   --color-background: var(--color-background);
@@ -68,7 +68,7 @@
 }
 
 /* =========================================================
-   BASE / RESET
+    BASE / RESET
    ========================================================= */
 html, body { height: 100%; }
 body {
@@ -79,7 +79,7 @@ body {
 }
 
 /* =========================================================
-   TIPOGRAFÍA / UTILIDADES
+    TIPOGRAFÍA / UTILIDADES
    ========================================================= */
 .h-display { font-family: var(--font-display); letter-spacing:-.02em; }
 .h-tight   { letter-spacing:-.015em; }
@@ -91,9 +91,9 @@ body {
 }
 
 /* =========================================================
-   LINKS PREMIUM
+    LINKS PREMIUM
    ========================================================= */
-.link-underline { position: relative; display:inline-block; }
+.link-underline { position: relative; display:inline-block; text-decoration:none; }
 .link-underline::after {
   content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px;
   background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
@@ -115,7 +115,7 @@ body {
 }
 
 /* =========================================================
-   EFECTO “AFENTA” POR LETRA
+    EFECTO “AFENTA” POR LETRA
    ========================================================= */
 @keyframes afentaWave { 0%{background-position:0% 0} 100%{background-position:100% 0} }
 .afenta-letter{
@@ -128,7 +128,7 @@ body {
 .dark .afenta-letter{ filter: drop-shadow(0 2px 12px rgba(250,204,21,.45)); }
 
 /* =========================================================
-   ANIMACIONES (limpias y sin duplicados)
+    ANIMACIONES
    ========================================================= */
 @keyframes ctaGradient {
   0%{background-position:0% 50%}
@@ -145,7 +145,6 @@ body {
   50%{transform:translate3d(6%,-4%,0) scale(1.05)}
   100%{transform:translate3d(0,0,0) scale(1)}
 }
-/* aurora única */
 @keyframes auroraMove{
   0%  { transform:translate3d(0,0,0) scale(1);   filter:hue-rotate(0deg);  opacity:.9; }
   50% { transform:translate3d(4%,-3%,0) scale(1.03); filter:hue-rotate(20deg); opacity:1; }
@@ -153,17 +152,10 @@ body {
 }
 .animate-aurora{ animation: auroraMove 14s ease-in-out infinite; }
 
-/* fade + grow helpers */
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .animate-fade{ animation: fadeIn .42s ease both; }
 @keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 .grow-y{ transform-origin:bottom; animation: growY .6s ease-out both; }
-
-/* Helpers listas */
-.animate-cta-gradient { animation: ctaGradient 6s linear infinite; }
-.animate-sheen        { animation: sheen 3s ease-in-out infinite; }
-.animate-blob-12s     { animation: blobMove 12s ease-in-out infinite; }
-.animate-blob-14s     { animation: blobMove 14s ease-in-out infinite; }
 
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
@@ -177,7 +169,7 @@ body {
 }
 
 /* =========================================================
-   UTILIDADES DE TEMA
+    UTILIDADES DE TEMA
    ========================================================= */
 .surface     { background: var(--color-surface);   color: var(--color-foreground); }
 .surface-2   { background: var(--color-surface-2); color: var(--color-foreground); }
@@ -190,19 +182,23 @@ body {
   background-size: 200% 100%;
 }
 
-/* Botones utilitarios (por si quieres usarlos como clases directas) */
+/* =========================================================
+    BOTONES (unificados)
+   ========================================================= */
 .btn-afenta-solid{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
   padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
   color:#fff; background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
   background-size:300% 300%; animation: ctaGradient 6s linear infinite;
-  box-shadow: 0 10px 28px rgba(124,58,237,.35); transition: transform .3s ease, box-shadow .3s ease;
+  box-shadow: 0 10px 28px rgba(124,58,237,.35);
+  transition: transform .3s ease, box-shadow .3s ease;
+  text-decoration: none;
 }
 .dark .btn-afenta-solid{ color:#000; }
 .btn-afenta-solid:hover{ transform: scale(1.03); box-shadow: 0 16px 40px rgba(124,58,237,.55); }
 .btn-afenta-solid:active{ transform: scale(.95); }
 .btn-afenta-solid::after{
-  content:""; position:absolute; inset:0;
+  content:""; position:absolute; inset:0; border-radius:inherit;
   background: linear-gradient(120deg,transparent,rgba(255,255,255,.6),transparent);
   background-size:200% 100%; animation: sheen 3s ease-in-out infinite; pointer-events:none;
 }
@@ -210,42 +206,44 @@ body {
 .btn-afenta-outline{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
   padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
-  background: var(--color-surface); color: var(--color-foreground);
-  box-shadow: 0 6px 20px rgba(0,0,0,.08); transition: box-shadow .3s ease, transform .3s ease;
+  text-decoration:none; transition: transform .3s ease, box-shadow .3s ease;
+  border:2px solid transparent;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold)) border-box;
+  color: var(--color-foreground);
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
 }
-.btn-afenta-outline::before{
-  content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1;
-  background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
-}
-.btn-afenta-outline:hover{ box-shadow: 0 10px 28px rgba(0,0,0,.12); }
+.btn-afenta-outline:hover{ box-shadow: 0 10px 28px rgba(0,0,0,.12); transform: translateY(-1px); }
 .btn-afenta-outline:active{ transform: scale(.95); }
+
 /* ============================
-   CONTENEDOR FLUIDO 2K / 4K
+    CONTENEDOR FLUIDO 2K / 4K
    ============================ */
 .container-afenta {
   width: 100%;
   margin-inline: auto;
-  padding-left: 1rem;   /* px-4 */
+  padding-left: 1rem;
   padding-right: 1rem;
-  max-width: min(100%, 90rem); /* 1440px aprox */
+  max-width: min(100%, 90rem);
 }
-@media (min-width: 640px) {   /* sm:px-6 */
+@media (min-width: 640px) {
   .container-afenta { padding-left: 1.5rem; padding-right: 1.5rem; }
 }
-@media (min-width: 1536px) {  /* 2xl */
-  .container-afenta { max-width: min(100%, 100rem); } /* 1600px aprox */
+@media (min-width: 1536px) {
+  .container-afenta { max-width: min(100%, 100rem); }
 }
 
-/* Alturas de header coherentes en todas las vistas */
+/* Alturas de header coherentes */
 .header-h { height: 64px; }
 @media (min-width: 640px) { .header-h { height: 68px; } }
 
-/* Drawer móvil (sombras y backdrop) */
+/* Drawer móvil */
 .backdrop-afenta {
   position: fixed; inset: 0; backdrop-filter: blur(6px);
   background: color-mix(in oklab, var(--color-background) 70%, transparent);
 }
 
-/* Tipografía fluida sugerida (opcional, por si la quieres usar) */
+/* Tipografía fluida sugerida */
 .text-fluid-title { font-size: clamp(1.75rem, 4.4vw, 2.5rem); line-height: 1.12; }
 .text-fluid-body  { font-size: clamp(.95rem, 1.2vw, 1.125rem); }

@@ -1,24 +1,23 @@
- 
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, Variants } from "framer-motion";
 import { useLanguage } from "./language-provider";
 import BackgroundFX from "./background-fx";
 
-/* ──────────────────────────────────────────────────────────
-    CONTENEDOR REUSABLE (pégalo igual en header/servicios)
-   ────────────────────────────────────────────────────────── */
-import { CONTAINER } from "./layout";
-<div className={`relative z-10 ${CONTAINER} pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-16 sm:pb-20 md:pb-24`}>
-  {/* ...tu grid y todo lo demás sin tocar */}
-</div>
-;
+/* ---------- Framer helpers ---------- */
+const EASE = [0.16, 1, 0.3, 1] as const; // ≈ easeOutQuint
+const SPRING = { type: "spring" as const, stiffness: 420, damping: 28 };
 
-/* ──────────────────────────────────────────────────────────
-    TEXTOS (igual que tenías)
-   ────────────────────────────────────────────────────────── */
+const fadeInUp = (delay = 0) => ({
+  initial: { y: 14, opacity: 0 },
+  animate: { y: 0, opacity: 1 },
+  transition: { duration: 0.5, ease: EASE, delay },
+});
+
+/* ───────── TEXTOS ───────── */
 const T = {
   en: {
     kicker: "Afenta — Brand · Websites · Performance",
@@ -27,6 +26,7 @@ const T = {
       "We blend design and engineering to build fast, beautiful experiences that convert — then we scale the performance.",
     primary: "Start a project",
     secondary: "View cases",
+    tertiary: "About us",
     trust: "Trusted by teams in",
     stat1: "↑ 3–5x",
     stat1Label: "Improved conversion",
@@ -34,7 +34,6 @@ const T = {
     stat2Label: "Core Web Vitals",
     stat3: "98/100",
     stat3Label: "Lighthouse score",
-
     kpiLeads: "Leads (7d)",
     kpiCPA: "CPA",
     kpiCR: "CR",
@@ -53,6 +52,7 @@ const T = {
       "We brengen design en engineering samen voor snelle, prachtige experiences die converteren — en daarna schalen we de performance.",
     primary: "Project starten",
     secondary: "Bekijk cases",
+    tertiary: "Over ons",
     trust: "Vertrouwd door teams in",
     stat1: "↑ 3–5x",
     stat1Label: "Hogere conversie",
@@ -60,7 +60,6 @@ const T = {
     stat2Label: "Core Web Vitals",
     stat3: "98/100",
     stat3Label: "Lighthouse score",
-
     kpiLeads: "Leads (7d)",
     kpiCPA: "CPA",
     kpiCR: "CR",
@@ -74,35 +73,7 @@ const T = {
   },
 } as const;
 
-/* ──────────────────────────────────────────────────────────
-   CTA (igual al del header)
-   ────────────────────────────────────────────────────────── */
-function BtnSolid({ children }: { children: React.ReactNode }) {
-  return (
-    <button
-      className="relative overflow-hidden rounded-xl px-6 py-3 font-extrabold
-                 text-white dark:text-black
-                 bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold
-                 bg-[length:300%_300%] animate-[ctaGradient_6s_linear_infinite]
-                 shadow-[0_10px_28px_rgba(124,58,237,.35)]
-                 transition-all duration-300 ease-out
-                 hover:scale-105 hover:shadow-[0_16px_40px_rgba(124,58,237,.55)]
-                 active:scale-95 cursor-pointer"
-    >
-      <span className="relative z-10">{children}</span>
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0
-                   bg-[linear-gradient(120deg,transparent,rgba(255,255,255,.6),transparent)]
-                   bg-[length:200%_100%] animate-[sheen_3s_ease-in-out_infinite]"
-      />
-    </button>
-  );
-}
-
-/* ──────────────────────────────────────────────────────────
-   HOOK: Count-up para KPIs
-   ────────────────────────────────────────────────────────── */
+/* ───────── Hook count-up ───────── */
 function useCountUp(target: number, duration = 700, deps: React.DependencyList = []) {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -121,9 +92,7 @@ function useCountUp(target: number, duration = 700, deps: React.DependencyList =
   return val;
 }
 
-/* ──────────────────────────────────────────────────────────
-  CHART HELPERS (SVG) — igual que tenías
-   ────────────────────────────────────────────────────────── */
+/* ───────── CHARTS (SVG) ───────── */
 function TinyBars({ bars }: { bars: number[] }) {
   const max = Math.max(...bars);
   return (
@@ -147,7 +116,6 @@ function TinyBars({ bars }: { bars: number[] }) {
     </svg>
   );
 }
-
 function TinyLine({ points, height = 56 }: { points: number[]; height?: number }) {
   const W = 120,
     H = height;
@@ -169,7 +137,6 @@ function TinyLine({ points, height = 56 }: { points: number[]; height?: number }
     </svg>
   );
 }
-
 function TinyDonut({ value }: { value: number }) {
   const pct = Math.max(4, Math.min(96, value));
   const C = 18,
@@ -201,21 +168,11 @@ function TinyDonut({ value }: { value: number }) {
   );
 }
 
-/* ──────────────────────────────────────────────────────────
-   MOCK con tabs + autorotate + animaciones (tal cual)
-   ────────────────────────────────────────────────────────── */
+/* ───────── MOCK con tabs + autorotate ───────── */
 type Tab = "all" | "ads" | "web";
 const DATA: Record<
   Tab,
-  {
-    leads: number;
-    cpa: number;
-    cr: number;
-    conv: number;
-    bars: number[];
-    brand: number[];
-    trend: number[];
-  }
+  { leads: number; cpa: number; cr: number; conv: number; bars: number[]; brand: number[]; trend: number[] }
 > = {
   all: {
     leads: 312,
@@ -246,48 +203,39 @@ const DATA: Record<
   },
 };
 
+function useCountUpVal(target: number, deps: React.DependencyList) {
+  return useCountUp(target, 700, deps);
+}
 function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
   const order: Tab[] = useMemo(() => ["all", "ads", "web"], []);
   const [tab, setTab] = useState<Tab>("all");
   const [pausedUntil, setPausedUntil] = useState<number>(0);
   const timer = useRef<number | null>(null);
-
-  // autorotate
   useEffect(() => {
     const tick = () => {
       if (Date.now() < pausedUntil) return;
-      setTab((prev) => {
-        const i = order.indexOf(prev);
-        return order[(i + 1) % order.length];
-      });
+      setTab((prev) => order[(order.indexOf(prev) + 1) % order.length]);
     };
     timer.current = window.setInterval(tick, 4000);
     return () => {
       if (timer.current) clearInterval(timer.current);
     };
   }, [order, pausedUntil]);
-
   const pause = (ms: number) => setPausedUntil(Date.now() + ms);
-
   const ds = DATA[tab];
-
-  // valores animados por KPI
-  const leadsAnim = useCountUp(ds.leads, 700, [tab, ds.leads]);
-  const cpaAnim = useCountUp(Math.abs(ds.cpa), 700, [tab, ds.cpa]);
-  const crAnim = useCountUp(ds.cr, 700, [tab, ds.cr]);
+  const leadsAnim = useCountUpVal(ds.leads, [tab, ds.leads]);
+  const cpaAnim = useCountUpVal(Math.abs(ds.cpa), [tab, ds.cpa]);
+  const crAnim = useCountUpVal(ds.cr, [tab, ds.cr]);
 
   return (
     <div
       className="relative rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] overflow-hidden"
       onMouseEnter={() => pause(10_000)}
     >
-      {/* “cromado” exterior del mock */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[.18]
-                   bg-[radial-gradient(90%_140%_at_0%_0%,rgba(124,58,237,.35),transparent_60%),radial-gradient(90%_140%_at_100%_100%,rgba(250,204,21,.28),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 opacity-[.18] bg-[radial-gradient(90%_140%_at_0%_0%,rgba(124,58,237,.35),transparent_60%),radial-gradient(90%_140%_at_100%_100%,rgba(250,204,21,.28),transparent_60%)]"
       />
-
       {/* Header */}
       <div className="px-4 py-3 border-b border-[var(--color-ring)] relative">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_120%_at_0%_0%,rgba(124,58,237,.12),transparent),radial-gradient(60%_120%_at_100%_50%,rgba(250,204,21,.12),transparent)]" />
@@ -311,7 +259,6 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
               <div className="text-[11px] text-[var(--color-muted)]">Dashboard overview</div>
             </div>
           </div>
-
           <div className="hidden sm:flex items-center gap-2" role="tablist" aria-label="Mock tabs">
             {(["all", "ads", "web"] as Tab[]).map((k) => {
               const active = tab === k;
@@ -341,7 +288,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
 
       {/* Body */}
       <div className="p-4 grid grid-cols-12 gap-4">
-        {/* KPIs (count-up + fade) */}
+        {/* KPIs */}
         <div className="col-span-12 md:col-span-5 grid grid-cols-1 gap-3 animate-fade" key={`kpi-${tab}`}>
           {[
             { l: t.kpiLeads, v: `+${leadsAnim}`, key: "leads" },
@@ -350,9 +297,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           ].map((k) => (
             <div
               key={k.key}
-              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)]
-                         bg-[color:var(--color-surface-2)] text-[var(--color-text)]
-                         flex flex-col justify-between"
+              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[color:var(--color-surface-2)] text-[var(--color-text)] flex flex-col justify-between"
               onMouseEnter={() => pause(4000)}
             >
               <div className="text-[11px] text-[var(--color-muted)] leading-tight">{k.l}</div>
@@ -361,11 +306,9 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           ))}
         </div>
 
-        {/* Trend alto + centrado */}
+        {/* Trend */}
         <div
-          className="col-span-12 md:col-span-7 rounded-xl ring-1 ring-[var(--color-ring)]
-                     bg-[var(--color-surface-2)] p-4 md:p-5 animate-fade
-                     flex flex-col items-center justify-center h-[140px]"
+          className="col-span-12 md:col-span-7 rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4 md:p-5 animate-fade flex flex-col items-center justify-center h-[140px]"
           key={`trend-${tab}`}
         >
           <div className="w-full max-w-[95%]">
@@ -374,7 +317,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           <div className="text-[11px] text-[var(--color-muted)] mt-1 text-center">{t.trend}</div>
         </div>
 
-        {/* Cards inferiores */}
+        {/* Cards */}
         <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 animate-fade" key={`cards-${tab}`}>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
             <div className="text-sm font-semibold text-[var(--color-text)]">{t.conv}</div>
@@ -412,13 +355,43 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
   );
 }
 
-/* ──────────────────────────────────────────────────────────
-   UI HINTS (igual)
-   ────────────────────────────────────────────────────────── */
+/* ───────── RainText ───────── */
+function RainText({ text }: { text: string }) {
+  const container: Variants = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.035, delayChildren: 0.15 } },
+  };
+  const child: Variants = {
+    hidden: { y: -40, opacity: 0, rotate: 0.5 },
+    show: { y: 0, opacity: 1, rotate: 0, transition: SPRING },
+  };
+
+  return (
+    <motion.h1
+      className="h-display text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.18] md:leading-[1.22] pb-2
+                bg-gradient-to-r from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)]
+                bg-clip-text text-transparent drop-shadow-[0_8px_28px_rgba(124,58,237,.22)]"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {text.split(" ").map((word, wi) => (
+        <span key={`w-${wi}`} className="inline-block mr-[0.35ch] align-top">
+          {Array.from(word).map((ch, ci) => (
+            <motion.span key={`w${wi}c${ci}`} className="inline-block" variants={child}>
+              {ch}
+            </motion.span>
+          ))}
+        </span>
+      ))}
+    </motion.h1>
+  );
+}
+
+/* ───────── UI Hints ───────── */
 function SmartNavHints() {
   const [showCue, setShowCue] = useState(true);
   const [showTop, setShowTop] = useState(false);
-
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
@@ -431,7 +404,6 @@ function SmartNavHints() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   return (
     <>
       {showCue && (
@@ -458,59 +430,43 @@ function SmartNavHints() {
   );
 }
 
-/* ──────────────────────────────────────────────────────────
-   HERO (ajustes mobile + 4K)
-   ────────────────────────────────────────────────────────── */
+/* ───────── HERO ───────── */
 export default function Hero() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
   return (
-    <section
-      id="home"
-      className="
-        relative isolate overflow-hidden
-        min-h-[92svh] md:min-h-[88svh]
-      "
-    >
-      {/* Fondo global */}
-      <BackgroundFX />
+    <section id="home" className="relative min-h-[72vh] md:min-h-[65vh] overflow-hidden">
+      <BackgroundFX className="opacity-90 [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
 
-      {/* contenedor FLUIDO y reusabe */}
-      <div className={`relative z-10 ${CONTAINER} pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-16 sm:pb-20 md:pb-24`}>
-        <div className="grid items-start grid-cols-1 lg:grid-cols-12 gap-y-12 sm:gap-y-14 lg:gap-x-10 xl:gap-x-14">
-          {/* MOCK primero en móvil para que se vea arriba; luego texto en desktop */}
-          <div className="lg:col-span-5 order-first lg:order-none">
-            <div className="mx-auto w-[min(94%,28rem)] sm:w-[min(88%,32rem)] lg:w-full lg:max-w-[32rem] xl:max-w-[36rem]">
-              <Mock t={t} />
-            </div>
-          </div>
-
-          {/* Izquierda (copy) */}
-          <div className="lg:col-span-7 [cursor:default]">
-            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs sm:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
+      <div className="relative z-10 container-afenta pt-16 md:pt-24 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start md:items-center">
+          {/* izquierda */}
+          <div className="md:col-span-7 [cursor:default]">
+            <motion.div
+              {...fadeInUp(0.05)}
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]"
+            >
               {t.kicker}
-            </div>
+            </motion.div>
 
-            {/* Tipografía fluida (clamp) → se ve bien en móvil y 4K */}
-            <h1 className="mt-4 h-display font-extrabold tracking-tight text-[clamp(2rem,6vw,3.75rem)] leading-[1.12] md:leading-[1.18] pb-2 bg-gradient-to-r from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)] bg-clip-text text-transparent drop-shadow-[0_8px_28px_rgba(124,58,237,.22)]">
-              {t.title}
-            </h1>
+            <RainText key={`${lang}-${t.title}`} text={t.title} />
 
-            <p className="mt-5 text-[clamp(.95rem,1.2vw,1.125rem)] text-[var(--color-muted)] max-w-prose">
+            <motion.p {...fadeInUp(0.25)} className="mt-6 text-base md:text-lg text-[var(--color-muted)] max-w-[44ch]">
               {t.subtitle}
-            </p>
+            </motion.p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link href="#contact">
-                <BtnSolid>{t.primary}</BtnSolid>
-              </Link>
-              <Link href="#cases">
-                <BtnSolid>{t.secondary}</BtnSolid>
-              </Link>
-            </div>
+            <motion.div
+              initial={{ y: 28, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, ease: [0.16, 0.84, 0.44, 1], delay: 0.45 }}
+              className="mt-8 flex flex-wrap items-center gap-3"
+            >
+              <Link href="#contact" className="btn-afenta-solid no-underline">{t.primary}</Link>
+              <Link href="#cases" className="btn-afenta-solid no-underline">{t.secondary}</Link>
+              <Link href="#about" className="btn-afenta-outline no-underline">{t.tertiary}</Link>
+            </motion.div>
 
-            {/* Métricas */}
             <div className="mt-8 grid grid-cols-3 max-w-md gap-4 text-sm">
               <div>
                 <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat1}</div>
@@ -526,7 +482,6 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Logos */}
             <div className="mt-8 flex items-center gap-4 text-xs text-[var(--color-muted)]">
               <span className="shrink-0">{t.trust}</span>
               <div className="flex items-center gap-4 opacity-80">
@@ -537,16 +492,19 @@ export default function Hero() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Separador hacia Servicios */}
-        <div className="mt-12 md:mt-16">
-          <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--color-ring)] to-transparent" />
-          <div
-            className="mx-auto mt-4 h-10 w-10/12 rounded-[24px]
-                        bg-[radial-gradient(60%_60%_at_50%_0%,rgba(124,58,237,.12),transparent_60%)]
-                        dark:bg-[radial-gradient(60%_60%_at_50%_0%,rgba(124,58,237,.18),transparent_60%)]"
-          />
+          {/* derecha / mock */}
+          <div className="md:col-span-5 relative min-h-[420px]">
+            <motion.div
+              className="md:sticky md:top-24"
+              initial={{ y: 40, opacity: 0, scale: 0.985 }}
+              whileInView={{ y: 0, opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.6, ease: EASE }}
+            >
+              <Mock t={t} />
+            </motion.div>
+          </div>
         </div>
       </div>
 
