@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { PenTool, Code2, Rocket, LineChart, ShieldCheck, Gauge } from "lucide-react";
 import { useLanguage } from "./language-provider";
-import BackgroundFX from "./background-fx";
 
 /* easing */
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -122,7 +121,7 @@ export default function Services() {
     return (
     <section id="services" className="relative overflow-hidden">
       {/* mismo fondo que el hero */}
-        <BackgroundFX className="opacity-90 [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
+        
 
         <div className="container-afenta py-20 md:py-28 relative z-10">
         {/* Header */}

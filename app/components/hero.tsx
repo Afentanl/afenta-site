@@ -4,8 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
-import { useLanguage } from "./language-provider";
-import BackgroundFX from "./background-fx";
+import { useLanguage } from "./language-provider";;
 
 /* ---------- Framer helpers ---------- */
 const EASE = [0.16, 1, 0.3, 1] as const; // ≈ easeOutQuint
@@ -437,7 +436,7 @@ export default function Hero() {
 
   return (
     <section id="home" className="relative min-h-[72vh] md:min-h-[65vh] overflow-hidden">
-      <BackgroundFX className="opacity-90 [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
+      
 
       <div className="relative z-10 container-afenta pt-16 md:pt-24 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start md:items-center">

@@ -1,17 +1,20 @@
-"use client";
-
 import Header from "./components/header";
 import Hero from "./components/hero";
 import About from "./components/about";
 import Services from "./components/services";
+import SectionDivider from "./components/section-divider";
 
-export default function Home() {
+export default function Page() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
       <Header />
-      <Hero />
-      <About />
-      <Services />
-    </div>
+      <main>
+        <Hero />
+        <SectionDivider />
+        <About />
+        <SectionDivider />
+        <Services />
+      </main>
+    </>
   );
 }

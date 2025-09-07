@@ -188,7 +188,7 @@ body {
 .btn-afenta-solid{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
   padding:.75rem 1.5rem; border-radius:.75rem; font-weight:800; line-height:1;
-  color:#fff; background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
+  color:#000; background-image: linear-gradient(90deg,var(--color-brand-violet),var(--color-fuchsia),var(--color-brand-gold));
   background-size:300% 300%; animation: ctaGradient 6s linear infinite;
   box-shadow: 0 10px 28px rgba(124,58,237,.35);
   transition: transform .3s ease, box-shadow .3s ease;

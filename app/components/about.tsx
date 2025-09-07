@@ -3,7 +3,6 @@
 import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import { useLanguage } from "./language-provider";
-import BackgroundFX from "./background-fx";
 
 const COPY = {
     en: {
@@ -64,9 +63,6 @@ export default function About() {
 
     return (
     <section id="about" className="relative overflow-hidden py-18 md:py-24">
-      {/* mismo fondo que el hero */}
-        <BackgroundFX className="opacity-90 [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
-
         <div className="relative z-10 container-afenta">
         <motion.div
             variants={up}
