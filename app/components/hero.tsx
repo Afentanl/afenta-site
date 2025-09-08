@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
-import { useLanguage } from "./language-provider";;
+import { useLanguage } from "./language-provider";
 
 /* ---------- Framer helpers ---------- */
 const EASE = [0.16, 1, 0.3, 1] as const; // ≈ easeOutQuint
@@ -26,7 +26,8 @@ const T = {
     primary: "Start a project",
     secondary: "View cases",
     tertiary: "About us",
-    trust: "Trusted by teams in",
+    servicesLabel: "Our services",
+    services: ["Marketing", "Frontend", "Backend", "Data", "Cybersecurity", "AI"],
     stat1: "↑ 3–5x",
     stat1Label: "Improved conversion",
     stat2: "< 1.2s",
@@ -52,7 +53,8 @@ const T = {
     primary: "Project starten",
     secondary: "Bekijk cases",
     tertiary: "Over ons",
-    trust: "Vertrouwd door teams in",
+    servicesLabel: "Onze diensten",
+    services: ["Marketing", "Frontend", "Backend", "Data", "Cybersecurity", "AI"],
     stat1: "↑ 3–5x",
     stat1Label: "Hogere conversie",
     stat2: "< 1.2s",
@@ -240,7 +242,8 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_120%_at_0%_0%,rgba(124,58,237,.12),transparent),radial-gradient(60%_120%_at_100%_50%,rgba(250,204,21,.12),transparent)]" />
         <div className="relative z-10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <Image
+            {/* Logo (oculto si falla) */}
+            <img
               src="/logo-afenta.png"
               alt="Afenta"
               width={24}
@@ -250,7 +253,6 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
               }}
             />
-            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)] sm:hidden" />
             <div className="leading-tight">
               <div className="text-sm font-bold text-[var(--color-text)] flex items-center gap-1.5">
                 Afenta <span className="text-amber-400">Ads</span>
@@ -296,7 +298,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           ].map((k) => (
             <div
               key={k.key}
-              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[color:var(--color-surface-2)] text-[var(--color-text)] flex flex-col justify-between"
+              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] text-[var(--color-text)] flex flex-col justify-between"
               onMouseEnter={() => pause(4000)}
             >
               <div className="text-[11px] text-[var(--color-muted)] leading-tight">{k.l}</div>
@@ -369,7 +371,7 @@ function RainText({ text }: { text: string }) {
     <motion.h1
       className="h-display text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.18] md:leading-[1.22] pb-2
                 bg-gradient-to-r from-[var(--color-brand-violet)] via-[var(--color-fuchsia)] to-[var(--color-brand-gold)]
-                bg-clip-text text-transparent drop-shadow-[0_8px_28px_rgba(124,58,237,.22)]"
+                bg-clip-text text-transparent drop-shadow-[0_8px_28px_rgba(124,58,237,.22)] select-none"
       variants={container}
       initial="hidden"
       animate="show"
@@ -387,10 +389,12 @@ function RainText({ text }: { text: string }) {
   );
 }
 
-/* ───────── UI Hints ───────── */
+/* ───────── UI Hints (scroll cue + back-to-top) ───────── */
 function SmartNavHints() {
   const [showCue, setShowCue] = useState(true);
   const [showTop, setShowTop] = useState(false);
+  const [nearFooter, setNearFooter] = useState(false);
+
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
@@ -401,8 +405,24 @@ function SmartNavHints() {
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+
+    // cuando el footer entra en viewport, “eleva” el botón
+    const footer = document.querySelector("footer");
+    let obs: IntersectionObserver | null = null;
+    if (footer) {
+      obs = new IntersectionObserver(
+        (entries) => setNearFooter(entries.some((e) => e.isIntersecting)),
+        { rootMargin: "0px 0px 35% 0px", threshold: 0 }
+      );
+      obs.observe(footer);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (obs && footer) obs.unobserve(footer);
+    };
   }, []);
+
   return (
     <>
       {showCue && (
@@ -420,7 +440,14 @@ function SmartNavHints() {
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label="Back to top"
-          className="fixed bottom-6 right-6 z-40 rounded-full px-3.5 py-3 bg-[var(--color-text)] text-[var(--color-surface)] shadow-lg hover:scale-105 active:scale-95 transition"
+          className={`fixed z-40 rounded-full px-3.5 py-3
+                      bg-gradient-to-r from-[var(--color-brand-violet)] to-[var(--color-brand-gold)]
+                      text-white shadow-lg hover:scale-105 active:scale-95 transition
+                      ${nearFooter
+                        ? "left-1/2 -translate-x-1/2 right-auto bottom-[96px]" // centrado, justo sobre el footer
+                        : "right-10 bottom-6"                                     // en la esquina durante el scroll normal
+                      }`}
+          style={{ paddingInline: "0.9rem" }}
         >
           ↑
         </button>
@@ -434,14 +461,33 @@ export default function Hero() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
-  return (
-    <section id="home" className="relative min-h-[72vh] md:min-h-[65vh] overflow-hidden">
-      
+  const services = t.services.map((label) => ({ label, href: "#services" }));
+  const marquee = [...services, ...services]; // duplicado para loop perfecto
 
+  return (
+    <section id="home" className="relative min-h-[72vh] md:min-h-[60vh] overflow-hidden">
+      {/* keyframes locales para el treadmill */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .marquee-track {
+            animation: marquee 18s linear infinite;
+            will-change: transform;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .marquee-track { animation: none !important; }
+          }
+        `,
+        }}
+      />
       <div className="relative z-10 container-afenta pt-16 md:pt-24 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start md:items-center">
           {/* izquierda */}
-          <div className="md:col-span-7 [cursor:default]">
+          <div className="md:col-span-7 select-none cursor-default">
             <motion.div
               {...fadeInUp(0.05)}
               className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]"
@@ -461,11 +507,18 @@ export default function Hero() {
               transition={{ duration: 0.5, ease: [0.16, 0.84, 0.44, 1], delay: 0.45 }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <Link href="#contact" className="btn-afenta-solid no-underline">{t.primary}</Link>
-              <Link href="#cases" className="btn-afenta-solid no-underline">{t.secondary}</Link>
-              <Link href="#about" className="btn-afenta-outline no-underline">{t.tertiary}</Link>
+              <Link href="#contact" className="btn-afenta-solid no-underline">
+                {t.primary}
+              </Link>
+              <Link href="#cases" className="btn-afenta-solid no-underline">
+                {t.secondary}
+              </Link>
+              <Link href="#about" className="btn-afenta-outline no-underline">
+                {t.tertiary}
+              </Link>
             </motion.div>
 
+            {/* KPIs */}
             <div className="mt-8 grid grid-cols-3 max-w-md gap-4 text-sm">
               <div>
                 <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat1}</div>
@@ -481,13 +534,21 @@ export default function Hero() {
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-4 text-xs text-[var(--color-muted)]">
-              <span className="shrink-0">{t.trust}</span>
-              <div className="flex items-center gap-4 opacity-80">
-                <Image src="/brands/brand-1.svg" alt="" width={60} height={20} className="h-5 w-auto" />
-                <Image src="/brands/brand-2.svg" alt="" width={60} height={20} className="h-5 w-auto" />
-                <Image src="/brands/brand-3.svg" alt="" width={60} height={20} className="h-5 w-auto" />
-                <Image src="/brands/brand-4.svg" alt="" width={60} height={20} className="h-5 w-auto" />
+            {/* Treadmill de servicios */}
+            <div className="mt-8 text-xs text-[var(--color-muted)]">
+              <div className="mb-2 font-semibold uppercase tracking-wide">{t.servicesLabel}</div>
+              <div className="relative overflow-hidden">
+                <div className="flex gap-3 marquee-track hover:[animation-play-state:paused] min-w-max">
+                  {marquee.map((s, i) => (
+                    <a
+                      key={`${s.label}-${i}`}
+                      href={s.href}
+                      className="px-4 py-1.5 rounded-full ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface)] text-[var(--color-foreground)] transition whitespace-nowrap cursor-pointer"
+                    >
+                      {s.label}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

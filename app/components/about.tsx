@@ -123,26 +123,24 @@ export default function About() {
                 ))}
             </motion.div>
 
-            <motion.div
-                variants={up}
-                className="mt-6 rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] p-5"
-            >
+           {/* Timeline limpio: dot sin comerse la primera letra */}
+            <motion.div variants={up} className="mt-6 rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] p-5">
                 <div className="text-sm font-semibold mb-3">{t.timelineTitle}</div>
-                <ol className="relative pl-5 space-y-4">
-                <span
-                    aria-hidden
-                    className="pointer-events-none absolute left-2 top-0 bottom-0 w-px bg-[var(--color-ring)]"
-                />
-                {t.steps.map((s, i) => (
-                    <li key={i} className="relative">
-                    <span className="absolute -left-[7px] top-[6px] h-3 w-3 rounded-full bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold" />
-                    <div className="font-semibold">{s.t}</div>
-                    <div className="text-sm text-[var(--color-muted)]">{s.d}</div>
-                    </li>
-                ))}
-                </ol>
+                <ol className="relative pl-7 md:pl-8 space-y-4">
+                    <span
+                        aria-hidden
+                        className="pointer-events-none absolute left-3 md:left-3.5 top-0 bottom-0 w-px bg-[var(--color-ring)]"
+            />
+            {t.steps.map((s, i) => (
+                <li key={i} className="relative pl-5">
+                    <span className="absolute left-0 top-2 h-3 w-3 rounded-full bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold" />
+                <div className="font-semibold">{s.t}</div>
+                <div className="text-sm text-[var(--color-muted)]">{s.d}</div>
+                </li>
+        ))}
+        </ol>
             </motion.div>
-            </motion.div>
+        </motion.div>
         </motion.div>
         </div>
     </section>

@@ -247,3 +247,105 @@ body {
 /* Tipografía fluida sugerida */
 .text-fluid-title { font-size: clamp(1.75rem, 4.4vw, 2.5rem); line-height: 1.12; }
 .text-fluid-body  { font-size: clamp(.95rem, 1.2vw, 1.125rem); }
+.section-divider {
+  position: relative;
+  isolation: isolate;
+}
+.section-divider::after{
+  content:""; position:absolute; inset:-40px 0 auto 0; height:120px; z-index:-1;
+  background:
+    radial-gradient(60% 120% at 20% 0%, color-mix(in oklab, var(--color-brand-violet) 14%, transparent) 0%, transparent 60%),
+    radial-gradient(60% 120% at 80% 0%, color-mix(in oklab, var(--color-brand-gold) 18%, transparent) 0%, transparent 60%);
+  filter: blur(24px); opacity:.6;
+}
+/* ===== Cinta de servicios (marquee) ===== */
+@keyframes marquee {
+  0%   { transform: translateX(0%); }
+  100% { transform: translateX(-50%); } /* con duplicado de items */
+}
+.animate-marquee {
+  animation: marquee 16s linear infinite;
+}
+
+/* ===== Cursor pro: por defecto no-editable ===== */
+:where(body) :where(*):not(a,button,input,textarea,select,[role="button"],[contenteditable="true"]) {
+  cursor: default;
+}
+:where(a,button,[role="button"]) { cursor: pointer; }
+/* =========================
+   GLOBAL PREMIUM BACKGROUND
+   ========================= */
+
+/* Base (modo claro / modo oscuro) */
+.bg-global-base {
+  /* LIGHT → mesh suave en tonos Afenta */
+  background:
+    radial-gradient(1200px 1200px at 10% 10%, color-mix(in oklab, #f0e9ff 50%, transparent) 0%, transparent 70%),
+    radial-gradient(1000px 1000px at 85% 25%, color-mix(in oklab, #fff7cc 42%, transparent) 0%, transparent 65%),
+    radial-gradient(900px 900px at 20% 85%, color-mix(in oklab, #fde3ff 42%, transparent) 0%, transparent 60%),
+    var(--color-background);
+}
+.dark .bg-global-base {
+  /* DARK → base neutra */
+  background: radial-gradient(60% 100% at 10% 0%, #0b0b0e 0%, #0b0b0e 60%, transparent 100%), #0a0a0d;
+}
+
+/* Aurora (solo dark) */
+.bg-aurora {
+  filter: blur(22px);
+  opacity: .75;
+  background:
+    radial-gradient(50% 60% at 10% 20%, rgba(124,58,237,.35), transparent 60%),
+    radial-gradient(60% 70% at 85% 30%, rgba(217,70,239,.28), transparent 60%),
+    radial-gradient(60% 70% at 50% 85%, rgba(250,204,21,.22), transparent 60%);
+  animation: aurora-shift 18s ease-in-out infinite alternate;
+}
+@keyframes aurora-shift {
+  0%   { transform: translate3d(0,0,0) scale(1);   filter: hue-rotate(0deg) blur(22px);  }
+  50%  { transform: translate3d(2%, -1%,0) scale(1.03); filter: hue-rotate(18deg) blur(22px); }
+  100% { transform: translate3d(0,0,0) scale(1);   filter: hue-rotate(0deg) blur(22px);  }
+}
+
+/* Sparkles sutiles (sin costo alto) */
+.bg-sparkles {
+  /* puntitos súper tenues en dorado/violeta, con parpadeo leve */
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(250,204,21,.10) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(167,139,250,.12) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(217,70,239,.10) 0 1px, transparent 2px);
+  background-size: 280px 220px, 320px 260px, 360px 300px;
+  mix-blend-mode: screen;
+  animation: sparkles-twinkle 6s ease-in-out infinite;
+}
+@keyframes sparkles-twinkle {
+  0%, 100% { opacity: .25; transform: translateY(0); }
+  50%      { opacity: .38; transform: translateY(-2px); }
+}
+
+/* Vignette muy suave (ambos modos) */
+.bg-vignette {
+  pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,.12), transparent 60%);
+  mix-blend-mode: soft-light;
+  opacity: .8;
+}
+
+/* =========================
+   MARQUEE (treadmill chips)
+   ========================= */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 18s linear infinite;
+  will-change: transform;
+}
+
+/* =========================
+   Back-to-top — posición segura
+   ========================= */
+.safe-bottom {
+  /* respeta safe areas y no pisa el footer */
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+}

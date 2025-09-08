@@ -7,9 +7,11 @@ export async function POST(req: Request) {
     try {
     const body = await req.json();
     const { name, email, message } = body || {};
+
     if (!name || !email || !message) {
         return NextResponse.json({ ok: false, error: "Missing fields" }, { status: 400 });
     }
+
     // TODO: integra Email/CRM (Resend/Sendgrid/etc.)
     return NextResponse.json({ ok: true });
     } catch {

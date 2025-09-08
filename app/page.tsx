@@ -1,20 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// app/page.tsx
 import Header from "./components/header";
 import Hero from "./components/hero";
-import About from "./components/about";
 import Services from "./components/services";
+import About from "./components/about";
+import Contact from "./components/contact";
+import Footer from "./components/footer";
 import SectionDivider from "./components/section-divider";
 
-export default function Page() {
+export default function HomePage() {
   return (
     <>
       <Header />
       <main>
-        <Hero />
-        <SectionDivider />
-        <About />
-        <SectionDivider />
-        <Services />
+        <Hero /><Services /><About />
+        <Contact />
       </main>
+      <Footer />
     </>
   );
 }
