@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "./language-provider";
-import { Instagram, Linkedin, Github, X } from "lucide-react";
+import { X, GithubIcon, LinkedinIcon, InstagramIcon } from "lucide-react";
 
 const T = {
     en: {
@@ -28,26 +28,47 @@ export default function Footer() {
     <footer className="mt-20 md:mt-28 border-t border-[var(--color-ring)]/70 bg-[var(--color-surface)]/70 backdrop-blur">
         <div className="container-afenta py-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-          <div className="md:col-span-5">
+            <div className="md:col-span-5">
             <div className="flex items-center gap-3">
-              <img src="/logo-afenta.png" alt="Afenta" className="h-10 w-10 rounded-xl" />
-              <div className="text-xl font-extrabold">Afenta</div>
+                <img src="/logo-afenta.png" alt="Afenta" className="h-10 w-10 rounded-xl" />
+                    <div className="text-xl font-extrabold">Afenta</div>
             </div>
             <p className="mt-3 text-sm text-[var(--color-muted)] max-w-prose">{t.tagline}</p>
 
             <div className="mt-4 flex items-center gap-3">
-              <a href="https://www.instagram.com/afenta.official/" aria-label="Instagram" className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition">
-                <Instagram className="h-4 w-4" />
-              </a>
-              <a href="https://linkedin.com" aria-label="LinkedIn" className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition">
-                <Linkedin className="h-4 w-4" />
-              </a>
-              <a href="https://github.com/Afentanl" aria-label="GitHub" className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition">
-                <Github className="h-4 w-4" />
+                <a href="https://www.instagram.com/afenta.official/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition"
+                >
+                <InstagramIcon className="h-4 w-4" />
                 </a>
-                <a href="https://x.com/Afenta_official" aria-label="X" className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition">
+                <a href="https://x.com/Afenta_official"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition"
+                >
+                <LinkedinIcon className="h-4 w-4" />
+                </a>
+                <a href="https://github.com/Afentanl"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition"
+                >
+                <GithubIcon className="h-4 w-4" />
+                </a>
+                <a
+                href="https://x.com/Afenta_official"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition"
+                >
                 <X className="h-4 w-4" />
-                </a>
+            </a>
             </div>
             </div>
 

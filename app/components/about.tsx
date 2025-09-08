@@ -115,7 +115,8 @@ export default function About() {
                 <motion.div
                     variants={up}
                     key={i}
-                    className="rounded-xl p-4 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] text-center"
+                    className="rounded-xl p-4 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)]/70 backdrop-blur-sm text-center"
+
                 >
                     <div className="text-lg md:text-2xl font-extrabold">{v}</div>
                     <div className="text-xs text-[var(--color-muted)]">{l}</div>
@@ -124,7 +125,7 @@ export default function About() {
             </motion.div>
 
            {/* Timeline limpio: dot sin comerse la primera letra */}
-            <motion.div variants={up} className="mt-6 rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] p-5">
+            <motion.div variants={up} className="mt-6 rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)]/70 backdrop-blur-sm p-5">
                 <div className="text-sm font-semibold mb-3">{t.timelineTitle}</div>
                 <ol className="relative pl-7 md:pl-8 space-y-4">
                     <span

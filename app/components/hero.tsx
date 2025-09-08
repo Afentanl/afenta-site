@@ -499,6 +499,10 @@ export default function Hero() {
 
             <motion.p {...fadeInUp(0.25)} className="mt-6 text-base md:text-lg text-[var(--color-muted)] max-w-[44ch]">
               {t.subtitle}
+            </motion.p><motion.p {...fadeInUp(0.35)} className="mt-4 text-sm md:text-base text-[var(--color-muted)]">
+  {lang === "en"
+    ? "Our expertise spans Marketing, Frontend, Backend, Data, Cybersecurity and AI."
+    : "Onze expertise omvat Marketing, Frontend, Backend, Data, Cybersecurity en AI."}
             </motion.p>
 
             <motion.div
