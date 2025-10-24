@@ -5,7 +5,7 @@ import type { Metadata } from "next";
  * Ajusta TU dominio de producción aquí.
  * Si aún no tienes dominio, deja el vercel.app temporal o localhost.
  */
-export const siteUrl = "https://afenta.com"; // <- cámbialo
+export const siteUrl = "https://afenta.nl"; // <- cámbialo
 
 export const brand = {
     name: "Afenta",
