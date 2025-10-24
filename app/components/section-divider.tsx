@@ -1,3 +1,4 @@
+//components section-divider.tsx
 "use client";
 
 export default function SectionDivider() {

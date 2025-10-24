@@ -1,3 +1,4 @@
+//app font.tsx
 import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 
 export const display = Space_Grotesk({

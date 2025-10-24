@@ -153,11 +153,11 @@ function TinyDonut({ value }: { value: number }) {
           <stop offset="100%" stopColor="var(--color-brand-gold)" />
         </linearGradient>
       </defs>
-      <circle cx={C} cy={C} r={R} fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="6" />
+      <circle cx={18} cy={18} r={14} fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="6" />
       <circle
-        cx={C}
-        cy={C}
-        r={R}
+        cx={18}
+        cy={18}
+        r={14}
         fill="none"
         stroke="url(#gradDonut)"
         strokeWidth="6"
@@ -254,7 +254,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
               }}
             />
             <div className="leading-tight">
-              <div className="text-sm font-bold text-[var(--color-text)] flex items-center gap-1.5">
+              <div className="text-sm font-bold text-[var(--color-foreground)] flex items-center gap-1.5">
                 Afenta <span className="text-amber-400">Ads</span>
               </div>
               <div className="text-[11px] text-[var(--color-muted)]">Dashboard overview</div>
@@ -275,8 +275,8 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
                   className={`px-3 py-1.5 text-xs rounded-lg ring-1 ring-[var(--color-ring)] cursor-pointer transition-all
                     ${
                       active
-                        ? "bg-[var(--color-surface-2)] text-[var(--color-text)] shadow-[0_6px_14px_rgba(0,0,0,.08)]"
-                        : "bg-[var(--color-surface-2)]/70 text-[var(--color-text)]/80 hover:bg-[var(--color-surface-2)] hover:translate-y-[0.5px] active:translate-y-[1px]"
+                        ? "bg-[var(--color-surface-2)] text-[var(--color-foreground)] shadow-[0_6px_14px_rgba(0,0,0,.08)]"
+                        : "bg-[var(--color-surface-2)]/70 text-[var(--color-foreground)]/80 hover:bg-[var(--color-surface-2)] hover:translate-y-[0.5px] active:translate-y-[1px]"
                     }`}
                 >
                   {t.tabs[k]}
@@ -298,7 +298,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           ].map((k) => (
             <div
               key={k.key}
-              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] text-[var(--color-text)] flex flex-col justify-between"
+              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] text-[var(--color-foreground)] flex flex-col justify-between"
               onMouseEnter={() => pause(4000)}
             >
               <div className="text-[11px] text-[var(--color-muted)] leading-tight">{k.l}</div>
@@ -321,20 +321,20 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
         {/* Cards */}
         <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3 animate-fade" key={`cards-${tab}`}>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
-            <div className="text-sm font-semibold text-[var(--color-text)]">{t.conv}</div>
+            <div className="text-sm font-semibold text-[var(--color-foreground)]">{t.conv}</div>
             <div className="mt-3 flex items-center gap-3">
               <TinyDonut value={Math.min(100, Math.round((ds.conv / 300) * 100))} />
-              <div className="text-2xl font-extrabold text-[var(--color-text)]">+{ds.conv}</div>
+              <div className="text-2xl font-extrabold text-[var(--color-foreground)]">+{ds.conv}</div>
             </div>
           </div>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
-            <div className="text-sm font-semibold text-[var(--color-text)]">{t.sales}</div>
+            <div className="text-sm font-semibold text-[var(--color-foreground)]">{t.sales}</div>
             <div className="mt-2">
               <TinyBars bars={ds.bars} />
             </div>
           </div>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
-            <div className="text-sm font-semibold text-[var(--color-text)]">{t.brand}</div>
+            <div className="text-sm font-semibold text-[var(--color-foreground)]">{t.brand}</div>
             <div className="mt-2">
               <TinyLine points={ds.brand} />
             </div>
@@ -345,7 +345,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
       {/* Footer */}
       <div className="px-5 py-4 border-t border-[var(--color-ring)] flex items-center justify-between">
         <div>
-          <div className="font-bold text-[var(--color-text)]">{t.caseTitle}</div>
+          <div className="font-bold text-[var(--color-foreground)]">{t.caseTitle}</div>
           <div className="text-xs text-[var(--color-muted)]">+212% leads, CPA −43%</div>
         </div>
         <Link href="#cases" className="text-xs font-semibold link-underline link-gradient">
@@ -358,14 +358,8 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
 
 /* ───────── RainText ───────── */
 function RainText({ text }: { text: string }) {
-  const container: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.035, delayChildren: 0.15 } },
-  };
-  const child: Variants = {
-    hidden: { y: -40, opacity: 0, rotate: 0.5 },
-    show: { y: 0, opacity: 1, rotate: 0, transition: SPRING },
-  };
+  const container: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.035, delayChildren: 0.15 } } };
+  const child: Variants = { hidden: { y: -40, opacity: 0, rotate: 0.5 }, show: { y: 0, opacity: 1, rotate: 0, transition: SPRING } };
 
   return (
     <motion.h1
@@ -406,7 +400,6 @@ function SmartNavHints() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // cuando el footer entra en viewport, “eleva” el botón
     const footer = document.querySelector("footer");
     let obs: IntersectionObserver | null = null;
     if (footer) {
@@ -428,7 +421,7 @@ function SmartNavHints() {
       {showCue && (
         <Link
           href="#services"
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium bg-[var(--color-surface)] text-[var(--color-text)] ring-1 ring-[var(--color-ring)] shadow-sm"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium bg-[var(--color-surface)] text-[var(--color-foreground)] ring-1 ring-[var(--color-ring)] shadow-sm"
         >
           <svg className="h-4 w-4 animate-bounce" viewBox="0 0 24 24" fill="none">
             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -443,10 +436,7 @@ function SmartNavHints() {
           className={`fixed z-40 rounded-full px-3.5 py-3
                       bg-gradient-to-r from-[var(--color-brand-violet)] to-[var(--color-brand-gold)]
                       text-white shadow-lg hover:scale-105 active:scale-95 transition
-                      ${nearFooter
-                        ? "left-1/2 -translate-x-1/2 right-auto bottom-[96px]" // centrado, justo sobre el footer
-                        : "right-10 bottom-6"                                     // en la esquina durante el scroll normal
-                      }`}
+                      ${nearFooter ? "left-1/2 -translate-x-1/2 right-auto bottom-[96px]" : "right-10 bottom-6"}`}
           style={{ paddingInline: "0.9rem" }}
         >
           ↑
@@ -462,25 +452,16 @@ export default function Hero() {
   const t = T[lang as "en" | "nl"];
 
   const services = t.services.map((label) => ({ label, href: "#services" }));
-  const marquee = [...services, ...services]; // duplicado para loop perfecto
+  const marquee = [...services, ...services];
 
   return (
     <section id="home" className="relative min-h-[72vh] md:min-h-[60vh] overflow-hidden">
-      {/* keyframes locales para el treadmill */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
-          @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .marquee-track {
-            animation: marquee 18s linear infinite;
-            will-change: transform;
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .marquee-track { animation: none !important; }
-          }
+          @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+          .marquee-track { animation: marquee 18s linear infinite; will-change: transform; }
+          @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none !important; } }
         `,
         }}
       />
@@ -499,10 +480,11 @@ export default function Hero() {
 
             <motion.p {...fadeInUp(0.25)} className="mt-6 text-base md:text-lg text-[var(--color-muted)] max-w-[44ch]">
               {t.subtitle}
-            </motion.p><motion.p {...fadeInUp(0.35)} className="mt-4 text-sm md:text-base text-[var(--color-muted)]">
-  {lang === "en"
-    ? "Our expertise spans Marketing, Frontend, Backend, Data, Cybersecurity and AI."
-    : "Onze expertise omvat Marketing, Frontend, Backend, Data, Cybersecurity en AI."}
+            </motion.p>
+            <motion.p {...fadeInUp(0.35)} className="mt-4 text-sm md:text-base text-[var(--color-muted)]">
+              {lang === "en"
+                ? "Our expertise spans Marketing, Frontend, Backend, Data, Cybersecurity and AI."
+                : "Onze expertise omvat Marketing, Frontend, Backend, Data, Cybersecurity en AI."}
             </motion.p>
 
             <motion.div
@@ -525,15 +507,15 @@ export default function Hero() {
             {/* KPIs */}
             <div className="mt-8 grid grid-cols-3 max-w-md gap-4 text-sm">
               <div>
-                <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat1}</div>
+                <div className="font-extrabold text-lg text-[var(--color-foreground)]">{t.stat1}</div>
                 <div className="text-[var(--color-muted)]">{t.stat1Label}</div>
               </div>
               <div>
-                <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat2}</div>
+                <div className="font-extrabold text-lg text-[var(--color-foreground)]">{t.stat2}</div>
                 <div className="text-[var(--color-muted)]">{t.stat2Label}</div>
               </div>
               <div>
-                <div className="font-extrabold text-lg text-[var(--color-text)]">{t.stat3}</div>
+                <div className="font-extrabold text-lg text-[var(--color-foreground)]">{t.stat3}</div>
                 <div className="text-[var(--color-muted)]">{t.stat3Label}</div>
               </div>
             </div>

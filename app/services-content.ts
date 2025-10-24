@@ -1,3 +1,4 @@
+//services-content.ts
 /* Contenidos + destinos de cada servicio (EN / NL) */
 export type ServiceItem = { title: string; items: string[]; href: string };
 

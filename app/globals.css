@@ -1,10 +1,10 @@
 /* =========================================================
-   Tailwind v4 (config-less)
+  Tailwind v4 (config-less)
    ========================================================= */
 @import "tailwindcss";
 
 /* =========================================================
-   TOKENS (Light por defecto / Dark con .dark en <html>)
+  TOKENS (Light por defecto / Dark con .dark en <html>)
    ========================================================= */
 
 /* Light */
@@ -273,7 +273,7 @@ body {
 }
 :where(a,button,[role="button"]) { cursor: pointer; }
 /* =========================
-   GLOBAL PREMIUM BACKGROUND
+  GLOBAL PREMIUM BACKGROUND
    ========================= */
 
 /* Base (modo claro / modo oscuro) */
@@ -331,7 +331,7 @@ body {
 }
 
 /* =========================
-   MARQUEE (treadmill chips)
+  MARQUEE (treadmill chips)
    ========================= */
 @keyframes marquee {
   0%   { transform: translateX(0); }
@@ -343,7 +343,7 @@ body {
 }
 
 /* =========================
-   Back-to-top — posición segura
+  Back-to-top — posición segura
    ========================= */
 .safe-bottom {
   /* respeta safe areas y no pisa el footer */

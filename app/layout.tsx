@@ -1,32 +1,34 @@
-// app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { ThemeProvider } from "next-themes";
-
 import GlobalBackground from "./components/global-background";
 import { LanguageProvider } from "./components/language-provider";
 import Analytics, { GTMNoScript } from "./components/analytics";
 import { baseMetadata } from "./seo-config";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+import { ThemeProvider } from "./components/theme-provider"; // usamos tu wrapper
+import { display, sans, mono } from "./font";
 
 export const metadata: Metadata = baseMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} bg-background text-foreground min-h-screen antialiased`}>
-        {/* GTM <noscript> (se muestra si el usuario tiene JS desactivado) */}
+      <body
+        className={[
+          display.variable,
+          sans.variable,
+          mono.variable,
+          "bg-background text-foreground min-h-screen antialiased",
+        ].join(" ")}
+      >
+        {/* GTM <noscript> */}
         <GTMNoScript />
 
         {/* Fondo global premium */}
         <GlobalBackground />
 
         {/* Providers */}
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider>
           <LanguageProvider>
-            {/* Cargas de Analytics (GTM/GA4) */}
             <Analytics />
             {children}
           </LanguageProvider>

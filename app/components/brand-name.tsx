@@ -1,3 +1,4 @@
+//components brand-name.tsx
 "use client";
 
 const letters = ["A", "f", "e", "n", "t", "a"];
