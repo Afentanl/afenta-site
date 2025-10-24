@@ -6,7 +6,7 @@ import Analytics, { GTMNoScript } from "./components/analytics";
 import { baseMetadata } from "./seo-config";
 import { ThemeProvider } from "./components/theme-provider"; // usamos tu wrapper
 import { display, sans, mono } from "./font";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 export const metadata: Metadata = baseMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
