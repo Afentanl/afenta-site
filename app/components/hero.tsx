@@ -140,10 +140,7 @@ function TinyLine({ points, height = 56 }: { points: number[]; height?: number }
 }
 function TinyDonut({ value }: { value: number }) {
   const pct = Math.max(4, Math.min(96, value));
-  const C = 18,
-    R = 14,
-    P = 2 * Math.PI * R,
-    stroke = (pct / 100) * P;
+  const R = 14, P = 2 * Math.PI * R, stroke = (pct / 100) * P;
   return (
     <svg viewBox="0 0 36 36" className="h-12 w-12">
       <defs>
