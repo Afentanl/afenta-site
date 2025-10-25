@@ -417,7 +417,7 @@ function SmartNavHints() {
     <>
       {showCue && (
         <Link
-          href="#services"
+          href="/services"
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium bg-[var(--color-surface)] text-[var(--color-foreground)] ring-1 ring-[var(--color-ring)] shadow-sm"
         >
           <svg className="h-4 w-4 animate-bounce" viewBox="0 0 24 24" fill="none">
@@ -448,7 +448,7 @@ export default function Hero() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
-  const services = t.services.map((label) => ({ label, href: "#services" }));
+  const services = t.services.map((label) => ({ label, href: "/services" }));
   const marquee = [...services, ...services];
 
   return (

@@ -77,11 +77,11 @@ export default function Footer() {
 
           <nav className="md:col-span-4 grid grid-cols-2 gap-6 text-sm">
             <div className="space-y-2">
-              <Link href="#home" className="link-underline link-gradient">
+              <Link href="/" className="link-underline link-gradient">
                 {t.nav.home}
               </Link>
               <div>
-                <Link href="#services" className="link-underline link-gradient">
+                <Link href="/services" className="link-underline link-gradient">
                   {t.nav.services}
                 </Link>
               </div>

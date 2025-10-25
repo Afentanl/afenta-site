@@ -1,4 +1,3 @@
-//components header.tsx
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
@@ -6,37 +5,21 @@ import Link from "next/link";
 import { motion, useSpring } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Sun, Moon, Languages, Menu, X } from "lucide-react";
 import BrandName from "./brand-name";
 import { useLanguage } from "./language-provider";
 
 const NAV = {
-  en: {
-    home: "Home",
-    about: "About",
-    services: "Services",
-    cases: "Cases",
-    contact: "Contact",
-    slogan: "Where vision becomes impact",
-    cta: "Start a project",
-  },
-  nl: {
-    home: "Home",
-    about: "Over ons",
-    services: "Diensten",
-    cases: "Cases",
-    contact: "Contact",
-    slogan: "Waar visie impact wordt",
-    cta: "Project starten",
-  },
+  en: { home: "Home", about: "About", services: "Services", cases: "Cases", contact: "Contact", slogan: "Where vision becomes impact", cta: "Start a project" },
+  nl: { home: "Home", about: "Over ons", services: "Diensten", cases: "Cases", contact: "Contact", slogan: "Waar visie impact wordt", cta: "Project starten" },
 } as const;
 
 function BtnSolidHeader({ children }: { children: React.ReactNode }) {
   return (
     <button
       className="relative overflow-hidden rounded-xl px-6 py-3 font-extrabold
-                 text-black
-                 bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold
+                 text-black bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold
                  bg-[length:300%_300%] animate-[ctaGradient_6s_linear_infinite]
                  shadow-[0_10px_28px_rgba(124,58,237,.35)]
                  transition-all duration-300 ease-out
@@ -53,9 +36,6 @@ function BtnSolidHeader({ children }: { children: React.ReactNode }) {
     </button>
   );
 }
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return <a href={href} className="link-underline link-gradient">{children}</a>;
-}
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -63,7 +43,15 @@ export default function Header() {
   const { lang, setLang } = useLanguage();
   const t = NAV[lang];
 
-  // ── scale anim del logotipo (suave, no oculta el header)
+  const pathname = usePathname();
+  const onHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      window.location.reload();
+    }
+  };
+
+  // anim del logo
   const lastY = useRef(0);
   const [dir, setDir] = useState<"up" | "down">("up");
   const [y, setY] = useState(0);
@@ -72,8 +60,7 @@ export default function Header() {
     const onScroll = () => {
       const cur = window.scrollY || 0;
       setDir(cur > lastY.current ? "down" : "up");
-      lastY.current = cur;
-      setY(cur);
+      lastY.current = cur; setY(cur);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -91,7 +78,6 @@ export default function Header() {
   const scrolled = y > 4;
 
   return (
-    // CAMBIO: fixed + full width + z alto → siempre visible
     <header
       className={`fixed top-0 left-0 right-0 z-[100]
         ${scrolled ? "bg-background/85 shadow-[0_1px_0_0_var(--color-ring)]" : "bg-background/70"}
@@ -100,6 +86,7 @@ export default function Header() {
       <div className="container-afenta header-h flex items-center justify-between gap-4">
         <Link
           href="/"
+          onClick={onHomeClick}
           aria-label="Go to Home"
           className="group flex items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
         >
@@ -130,16 +117,15 @@ export default function Header() {
 
         {/* Nav desktop */}
         <nav className="hidden md:flex items-center gap-6 text-sm">
-          <NavLink href="#home">{t.home}</NavLink>
-          <NavLink href="#about">{t.about}</NavLink>
-          <NavLink href="#services">{t.services}</NavLink>
-          <NavLink href="#cases">{t.cases}</NavLink>
-          <NavLink href="#contact">{t.contact}</NavLink>
+          <Link href="/" onClick={onHomeClick} className="link-underline link-gradient">{t.home}</Link>
+          <Link href="/about" className="link-underline link-gradient">{t.about}</Link>
+          <Link href="/services" className="link-underline link-gradient">{t.services}</Link>
+          <Link href="/cases" className="link-underline link-gradient">{t.cases}</Link>
+          <Link href="/contact" className="link-underline link-gradient">{t.contact}</Link>
         </nav>
 
         {/* Acciones desktop */}
         <div className="hidden sm:flex items-center gap-2">
-          {/* Idioma */}
           <div className="hidden sm:flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 px-2 py-1 text-xs">
             <Languages className="h-4 w-4 opacity-70" />
             <button
@@ -164,7 +150,6 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Tema */}
           <button
             onClick={() => mounted && setTheme(theme === "dark" ? "light" : "dark")}
             className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 px-3 py-2 text-sm transition-colors bg-transparent text-foreground hover:bg-zinc-900 hover:text-white dark:hover:bg-zinc-700 dark:hover:text-zinc-100"
@@ -174,7 +159,7 @@ export default function Header() {
             <span className="hidden sm:inline">{!mounted ? "…" : theme === "dark" ? "Dark" : "Light"}</span>
           </button>
 
-          <a href="#contact"><BtnSolidHeader>{t.cta}</BtnSolidHeader></a>
+          <Link href="/contact"><BtnSolidHeader>{t.cta}</BtnSolidHeader></Link>
         </div>
 
         {/* Botón móvil */}
@@ -195,11 +180,11 @@ export default function Header() {
           <div className="backdrop-afenta" onClick={() => setOpen(false)} />
           <div id="mobile-nav" className="container-afenta py-3 relative z-10 border-t border-[var(--color-ring)] bg-background">
             <div className="flex flex-col gap-2 text-sm">
-              <a href="#home" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.home}</a>
-              <a href="#about" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.about}</a>
-              <a href="#services" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.services}</a>
-              <a href="#cases" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.cases}</a>
-              <a href="#contact" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.contact}</a>
+              <Link href="/" onClick={(e)=>{onHomeClick(e); setOpen(false);}} className="py-2 link-gradient">{t.home}</Link>
+              <Link href="/about" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.about}</Link>
+              <Link href="/services" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.services}</Link>
+              <Link href="/cases" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.cases}</Link>
+              <Link href="/contact" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.contact}</Link>
 
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 px-2 py-1 text-xs">
@@ -217,9 +202,9 @@ export default function Header() {
                 </button>
               </div>
 
-              <a href="#contact" className="mt-3 btn-afenta-solid text-center" onClick={() => setOpen(false)}>
+              <Link href="/contact" className="mt-3 btn-afenta-solid text-center" onClick={() => setOpen(false)}>
                 {t.cta}
-              </a>
+              </Link>
             </div>
           </div>
         </div>
