@@ -19,17 +19,33 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://afenta.nl"),
+  title: {
+    default: "Afenta",
+    template: "%s — Afenta",
+  },
+  description: "Brand · Websites · Performance",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Afenta",
     description: "Brand · Websites · Performance",
-    type: "website",
+    siteName: "Afenta",
     url: "/",
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Afenta" }],
+    type: "website",
+    images: [
+      {
+        url: "/og.png",           // <-- usa tu PNG
+        width: 1200,
+        height: 630,
+        alt: "Afenta",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/og.PNG "],
+    title: "Afenta",
+    description: "Brand · Websites · Performance",
+    images: ["/og.png"],
   },
 };
 
