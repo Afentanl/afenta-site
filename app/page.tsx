@@ -4,7 +4,7 @@ import Services from "./components/services";
 import About from "./components/about";
 import Contact from "./components/contact";
 
-export default function HomePage() {
+export default function Page() {
   return (
     <>
       <Hero />

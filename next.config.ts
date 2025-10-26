@@ -1,8 +1,13 @@
 import type { NextConfig } from "next";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({enabled: process.env.ANALYZE === "true"});
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  experimental: { optimizePackageImports: ["lucide-react"] },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
+  },
   async headers() {
     return [
       {
@@ -16,6 +21,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // opcional: si usas imágenes externas, define dominios aquí
+  // images: { domains: ["tu-dominio.cdn.com"] },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

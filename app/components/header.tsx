@@ -11,8 +11,24 @@ import BrandName from "./brand-name";
 import { useLanguage } from "./language-provider";
 
 const NAV = {
-  en: { home: "Home", about: "About", services: "Services", cases: "Cases", contact: "Contact", slogan: "Where vision becomes impact", cta: "Start a project" },
-  nl: { home: "Home", about: "Over ons", services: "Diensten", cases: "Cases", contact: "Contact", slogan: "Waar visie impact wordt", cta: "Project starten" },
+  en: {
+    home: "Home",
+    about: "About",
+    services: "Services",
+    cases: "Cases",
+    contact: "Contact",
+    slogan: "Where vision becomes impact",
+    cta: "Start a project",
+  },
+  nl: {
+    home: "Home",
+    about: "Over ons",
+    services: "Diensten",
+    cases: "Cases",
+    contact: "Contact",
+    slogan: "Waar visie impact wordt",
+    cta: "Project starten",
+  },
 } as const;
 
 function BtnSolidHeader({ children }: { children: React.ReactNode }) {
@@ -42,8 +58,9 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const { lang, setLang } = useLanguage();
   const t = NAV[lang];
-
   const pathname = usePathname();
+
+  // si ya estás en "/", el click en Home refresca
   const onHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (pathname === "/") {
       e.preventDefault();
@@ -60,7 +77,8 @@ export default function Header() {
     const onScroll = () => {
       const cur = window.scrollY || 0;
       setDir(cur > lastY.current ? "down" : "up");
-      lastY.current = cur; setY(cur);
+      lastY.current = cur;
+      setY(cur);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -181,10 +199,10 @@ export default function Header() {
           <div id="mobile-nav" className="container-afenta py-3 relative z-10 border-t border-[var(--color-ring)] bg-background">
             <div className="flex flex-col gap-2 text-sm">
               <Link href="/" onClick={(e)=>{onHomeClick(e); setOpen(false);}} className="py-2 link-gradient">{t.home}</Link>
-              <Link href="/about" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.about}</Link>
+              <Link href="/about"    onClick={() => setOpen(false)} className="py-2 link-gradient">{t.about}</Link>
               <Link href="/services" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.services}</Link>
-              <Link href="/cases" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.cases}</Link>
-              <Link href="/contact" onClick={() => setOpen(false)} className="py-2 link-gradient">{t.contact}</Link>
+              <Link href="/cases"    onClick={() => setOpen(false)} className="py-2 link-gradient">{t.cases}</Link>
+              <Link href="/contact"  onClick={() => setOpen(false)} className="py-2 link-gradient">{t.contact}</Link>
 
               <div className="mt-2 flex items-center gap-2">
                 <div className="flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 px-2 py-1 text-xs">

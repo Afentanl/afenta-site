@@ -352,3 +352,11 @@ body {
 /* Cursor por defecto (no “text caret”) en contenido no editable */
 :where(h1,h2,h3,h4,p,li,span,strong,em) { cursor: default; }
 a, button, [role="button"], [data-interactive="true"] { cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  .will-change-\[transform,opacity,filter\] {
+    animation: none !important;
+    transition: none !important;
+    filter: none !important;
+  }
+}

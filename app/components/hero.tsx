@@ -7,7 +7,7 @@ import { motion, Variants } from "framer-motion";
 import { useLanguage } from "./language-provider";
 
 /* ---------- Framer helpers ---------- */
-const EASE = [0.16, 1, 0.3, 1] as const; // ≈ easeOutQuint
+const EASE = [0.16, 1, 0.3, 1] as const;
 const SPRING = { type: "spring" as const, stiffness: 420, damping: 28 };
 
 const fadeInUp = (delay = 0) => ({
@@ -74,6 +74,16 @@ const T = {
   },
 } as const;
 
+/* mapa label -> slug */
+const SERVICE_LINKS: Record<string, string> = {
+  Marketing: "/services/marketing",
+  Frontend: "/services/technology",
+  Backend: "/services/technology",
+  Data: "/services/data",
+  Cybersecurity: "/services/cybersecurity",
+  AI: "/services/ai",
+};
+
 /* ───────── Hook count-up ───────── */
 function useCountUp(target: number, duration = 700, deps: React.DependencyList = []) {
   const [val, setVal] = useState(0);
@@ -118,10 +128,8 @@ function TinyBars({ bars }: { bars: number[] }) {
   );
 }
 function TinyLine({ points, height = 56 }: { points: number[]; height?: number }) {
-  const W = 120,
-    H = height;
-  const max = Math.max(...points),
-    min = Math.min(...points);
+  const W = 120, H = height;
+  const max = Math.max(...points), min = Math.min(...points);
   const step = W / (points.length - 1 || 1);
   const y = (v: number) => H - ((v - min) / (max - min || 1)) * (H - 8) - 4;
   const d = points.map((v, i) => `${i ? "L" : "M"} ${i * step} ${y(v)}`).join(" ");
@@ -168,37 +176,10 @@ function TinyDonut({ value }: { value: number }) {
 
 /* ───────── MOCK con tabs + autorotate ───────── */
 type Tab = "all" | "ads" | "web";
-const DATA: Record<
-  Tab,
-  { leads: number; cpa: number; cr: number; conv: number; bars: number[]; brand: number[]; trend: number[] }
-> = {
-  all: {
-    leads: 312,
-    cpa: -43,
-    cr: 18,
-    conv: 216,
-    bars: [12, 16, 22, 26, 28, 30, 26],
-    brand: [8, 10, 9, 11, 12, 11, 13],
-    trend: [12, 17, 15, 20, 18, 22, 27, 25, 28, 26, 30, 29, 31, 34],
-  },
-  ads: {
-    leads: 420,
-    cpa: -41,
-    cr: 22,
-    conv: 260,
-    bars: [10, 13, 18, 22, 23, 25, 21],
-    brand: [6, 7, 8, 9, 10, 9, 11],
-    trend: [10, 12, 14, 16, 18, 17, 19, 22, 24, 23, 25, 27, 28, 29],
-  },
-  web: {
-    leads: 180,
-    cpa: -22,
-    cr: 14,
-    conv: 140,
-    bars: [8, 10, 12, 14, 18, 20, 18],
-    brand: [5, 6, 6, 7, 7, 8, 9],
-    trend: [6, 8, 9, 10, 12, 11, 13, 14, 16, 17, 18, 19, 19, 20],
-  },
+const DATA: Record<Tab, { leads: number; cpa: number; cr: number; conv: number; bars: number[]; brand: number[]; trend: number[] }> = {
+  all:  { leads: 312, cpa: -43, cr: 18, conv: 216, bars: [12,16,22,26,28,30,26], brand: [8,10,9,11,12,11,13], trend: [12,17,15,20,18,22,27,25,28,26,30,29,31,34] },
+  ads:  { leads: 420, cpa: -41, cr: 22, conv: 260, bars: [10,13,18,22,23,25,21], brand: [6,7,8,9,10,9,11], trend: [10,12,14,16,18,17,19,22,24,23,25,27,28,29] },
+  web:  { leads: 180, cpa: -22, cr: 14, conv: 140, bars: [8,10,12,14,18,20,18], brand: [5,6,6,7,7,8,9], trend: [6,8,9,10,12,11,13,14,16,17,18,19,19,20] },
 };
 
 function useCountUpVal(target: number, deps: React.DependencyList) {
@@ -212,44 +193,27 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
   useEffect(() => {
     const tick = () => {
       if (Date.now() < pausedUntil) return;
-      setTab((prev) => order[(order.indexOf(prev) + 1) % order.length]);
+      setTab(prev => order[(order.indexOf(prev) + 1) % order.length]);
     };
     timer.current = window.setInterval(tick, 4000);
-    return () => {
-      if (timer.current) clearInterval(timer.current);
-    };
+    return () => { if (timer.current) clearInterval(timer.current); };
   }, [order, pausedUntil]);
   const pause = (ms: number) => setPausedUntil(Date.now() + ms);
   const ds = DATA[tab];
   const leadsAnim = useCountUpVal(ds.leads, [tab, ds.leads]);
-  const cpaAnim = useCountUpVal(Math.abs(ds.cpa), [tab, ds.cpa]);
-  const crAnim = useCountUpVal(ds.cr, [tab, ds.cr]);
+  const cpaAnim   = useCountUpVal(Math.abs(ds.cpa), [tab, ds.cpa]);
+  const crAnim    = useCountUpVal(ds.cr, [tab, ds.cr]);
 
   return (
-    <div
-      className="relative rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] overflow-hidden"
-      onMouseEnter={() => pause(10_000)}
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[.18] bg-[radial-gradient(90%_140%_at_0%_0%,rgba(124,58,237,.35),transparent_60%),radial-gradient(90%_140%_at_100%_100%,rgba(250,204,21,.28),transparent_60%)]"
-      />
+    <div className="relative rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] overflow-hidden" onMouseEnter={() => pause(10_000)}>
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[.18] bg-[radial-gradient(90%_140%_at_0%_0%,rgba(124,58,237,.35),transparent_60%),radial-gradient(90%_140%_at_100%_100%,rgba(250,204,21,.28),transparent_60%)]" />
       {/* Header */}
       <div className="px-4 py-3 border-b border-[var(--color-ring)] relative">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_120%_at_0%_0%,rgba(124,58,237,.12),transparent),radial-gradient(60%_120%_at_100%_50%,rgba(250,204,21,.12),transparent)]" />
         <div className="relative z-10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            {/* Logo (oculto si falla) */}
-            <img
-              src="/logo-afenta.png"
-              alt="Afenta"
-              width={24}
-              height={24}
-              className="h-6 w-6 rounded-full hidden sm:block"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = "none";
-              }}
-            />
+            <img src="/logo-afenta.png" alt="Afenta" width={24} height={24} className="h-6 w-6 rounded-full hidden sm:block"
+                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
             <div className="leading-tight">
               <div className="text-sm font-bold text-[var(--color-foreground)] flex items-center gap-1.5">
                 Afenta <span className="text-amber-400">Ads</span>
@@ -258,23 +222,18 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
             </div>
           </div>
           <div className="hidden sm:flex items-center gap-2" role="tablist" aria-label="Mock tabs">
-            {(["all", "ads", "web"] as Tab[]).map((k) => {
+            {(["all","ads","web"] as Tab[]).map(k => {
               const active = tab === k;
               return (
                 <button
                   key={k}
                   role="tab"
                   aria-selected={active}
-                  onClick={() => {
-                    setTab(k);
-                    pause(10_000);
-                  }}
-                  className={`px-3 py-1.5 text-xs rounded-lg ring-1 ring-[var(--color-ring)] cursor-pointer transition-all
-                    ${
-                      active
-                        ? "bg-[var(--color-surface-2)] text-[var(--color-foreground)] shadow-[0_6px_14px_rgba(0,0,0,.08)]"
-                        : "bg-[var(--color-surface-2)]/70 text-[var(--color-foreground)]/80 hover:bg-[var(--color-surface-2)] hover:translate-y-[0.5px] active:translate-y-[1px]"
-                    }`}
+                  onClick={() => { setTab(k); pause(10_000); }}
+                  className={`px-3 py-1.5 text-xs rounded-lg ring-1 ring-[var(--color-ring)] transition-all
+                    ${active
+                      ? "bg-[var(--color-surface-2)] text-[var(--color-foreground)] shadow-[0_6px_14px_rgba(0,0,0,.08)]"
+                      : "bg-[var(--color-surface-2)]/70 text-[var(--color-foreground)]/80 hover:bg-[var(--color-surface-2)] hover:translate-y-[0.5px] active:translate-y-[1px]"}`}
                 >
                   {t.tabs[k]}
                 </button>
@@ -290,14 +249,12 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
         <div className="col-span-12 md:col-span-5 grid grid-cols-1 gap-3 animate-fade" key={`kpi-${tab}`}>
           {[
             { l: t.kpiLeads, v: `+${leadsAnim}`, key: "leads" },
-            { l: t.kpiCPA, v: `-${cpaAnim}%`, key: "cpa" },
-            { l: t.kpiCR, v: `+${crAnim}%`, key: "cr" },
-          ].map((k) => (
-            <div
-              key={k.key}
-              className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] text-[var(--color-foreground)] flex flex-col justify-between"
-              onMouseEnter={() => pause(4000)}
-            >
+            { l: t.kpiCPA,   v: `-${cpaAnim}%`, key: "cpa" },
+            { l: t.kpiCR,    v: `+${crAnim}%`,  key: "cr" },
+          ].map(k => (
+            <div key={k.key}
+                 className="min-w-[116px] h-[74px] rounded-xl p-3 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] text-[var(--color-foreground)] flex flex-col justify-between"
+                 onMouseEnter={() => pause(4000)}>
               <div className="text-[11px] text-[var(--color-muted)] leading-tight">{k.l}</div>
               <div className="text-[20px] font-extrabold leading-none">{k.v}</div>
             </div>
@@ -305,10 +262,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
         </div>
 
         {/* Trend */}
-        <div
-          className="col-span-12 md:col-span-7 rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4 md:p-5 animate-fade flex flex-col items-center justify-center h-[140px]"
-          key={`trend-${tab}`}
-        >
+        <div className="col-span-12 md:col-span-7 rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4 md:p-5 animate-fade flex flex-col items-center justify-center h-[140px]" key={`trend-${tab}`}>
           <div className="w-full max-w-[95%]">
             <TinyLine points={ds.trend} height={96} />
           </div>
@@ -326,15 +280,11 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           </div>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
             <div className="text-sm font-semibold text-[var(--color-foreground)]">{t.sales}</div>
-            <div className="mt-2">
-              <TinyBars bars={ds.bars} />
-            </div>
+            <div className="mt-2"><TinyBars bars={ds.bars} /></div>
           </div>
           <div className="rounded-xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] p-4">
             <div className="text-sm font-semibold text-[var(--color-foreground)]">{t.brand}</div>
-            <div className="mt-2">
-              <TinyLine points={ds.brand} />
-            </div>
+            <div className="mt-2"><TinyLine points={ds.brand} /></div>
           </div>
         </div>
       </div>
@@ -345,7 +295,7 @@ function Mock({ t }: { t: (typeof T)["en"] | (typeof T)["nl"] }) {
           <div className="font-bold text-[var(--color-foreground)]">{t.caseTitle}</div>
           <div className="text-xs text-[var(--color-muted)]">+212% leads, CPA −43%</div>
         </div>
-        <Link href="#cases" className="text-xs font-semibold link-underline link-gradient">
+        <Link href="/cases" className="text-xs font-semibold link-underline link-gradient">
           {t.caseLink}
         </Link>
       </div>
@@ -380,7 +330,7 @@ function RainText({ text }: { text: string }) {
   );
 }
 
-/* ───────── UI Hints (scroll cue + back-to-top) ───────── */
+/* ───────── UI Hints ───────── */
 function SmartNavHints() {
   const [showCue, setShowCue] = useState(true);
   const [showTop, setShowTop] = useState(false);
@@ -409,7 +359,7 @@ function SmartNavHints() {
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      if (obs && footer) obs.unobserve(footer);
+      if (obs && footer) obs?.unobserve(footer);
     };
   }, []);
 
@@ -448,8 +398,17 @@ export default function Hero() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
-  const services = t.services.map((label) => ({ label, href: "/services" }));
+  // chips → slugs con hover grande
+  const services = t.services.map((label) => ({
+    label,
+    href: SERVICE_LINKS[label] || "/services",
+  }));
   const marquee = [...services, ...services];
+
+  // “despierta” las animaciones al montar
+  useEffect(() => {
+    requestAnimationFrame(() => window.dispatchEvent(new Event("scroll")));
+  }, []);
 
   return (
     <section id="home" className="relative min-h-[72vh] md:min-h-[60vh] overflow-hidden">
@@ -490,15 +449,9 @@ export default function Hero() {
               transition={{ duration: 0.5, ease: [0.16, 0.84, 0.44, 1], delay: 0.45 }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <Link href="#contact" className="btn-afenta-solid no-underline">
-                {t.primary}
-              </Link>
-              <Link href="#cases" className="btn-afenta-solid no-underline">
-                {t.secondary}
-              </Link>
-              <Link href="#about" className="btn-afenta-outline no-underline">
-                {t.tertiary}
-              </Link>
+              <Link href="/contact" className="btn-afenta-solid no-underline">{t.primary}</Link>
+              <Link href="/cases"   className="btn-afenta-solid no-underline">{t.secondary}</Link>
+              <Link href="/about"   className="btn-afenta-outline no-underline">{t.tertiary}</Link>
             </motion.div>
 
             {/* KPIs */}
@@ -523,13 +476,16 @@ export default function Hero() {
               <div className="relative overflow-hidden">
                 <div className="flex gap-3 marquee-track hover:[animation-play-state:paused] min-w-max">
                   {marquee.map((s, i) => (
-                    <a
+                    <Link
                       key={`${s.label}-${i}`}
                       href={s.href}
-                      className="px-4 py-1.5 rounded-full ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface)] text-[var(--color-foreground)] transition whitespace-nowrap cursor-pointer"
+                      className="px-4 py-1.5 rounded-full ring-1 ring-[var(--color-ring)]
+                                 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface)]
+                                 text-[var(--color-foreground)] transition whitespace-nowrap cursor-pointer
+                                 transform-gpu will-change-transform hover:scale-[1.06] active:scale-[.98]"
                     >
                       {s.label}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -541,10 +497,10 @@ export default function Hero() {
             <motion.div
               className="md:sticky md:top-24"
               initial={{ y: 40, opacity: 0, scale: 0.985 }}
-              whileInView={{ y: 0, opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.35 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: EASE }}
-            >
+              >
+
               <Mock t={t} />
             </motion.div>
           </div>
