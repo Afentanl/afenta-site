@@ -159,6 +159,7 @@ body {
 
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
+  .marquee-track, .animate-fade { animation: none !important; }
   .animate-cta-gradient,
   .animate-sheen,
   .animate-blob-12s,

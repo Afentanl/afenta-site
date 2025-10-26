@@ -23,17 +23,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
         <LanguageProvider>
           <ConsentProvider>
-            <AnalyticsGate />
-            <GTMNoScript />
-            <Header />
-            <SkipLink />
+          <AnalyticsGate />
+          <GTMNoScript />
+          <Header />
+          <SkipLink />
+        <main>
             <PageTransition>{children}</PageTransition>
-            <main className="pt-header min-h-[65vh]">{children}</main>
-            <Footer />
-            <CookieBanner />
+        </main>
+          <Footer />
+          <CookieBanner />
           </ConsentProvider>
-        </LanguageProvider>
-        </ThemeProvider>
+          </LanguageProvider>
+          </ThemeProvider>
+        <script
+          type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Afenta",
+      url: "https://afenta.nl",
+      logo: "https://afenta.nl/logo-afenta.png",
+      sameAs: ["https://www.instagram.com/...", "https://www.linkedin.com/company/..."],
+    }),
+  }}/>
       </body>  
     </html>
   );

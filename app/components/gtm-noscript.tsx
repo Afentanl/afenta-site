@@ -11,6 +11,9 @@ export default function GTMNoScript() {
         width="0"
         style={{ display: "none", visibility: "hidden" }}
       />
+      <link rel="preconnect" href="https://www.googletagmanager.com" />
+      <link rel="preconnect" href="https://www.google-analytics.com" />
+
     </noscript>
   );
 }
