@@ -1,14 +1,12 @@
 import type { MetadataRoute } from "next";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://afenta.com";
-
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://afenta.nl";
   return [
-    { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${BASE}/#services`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE}/#about`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE}/#cases`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE}/#contact`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${base}/about`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/services`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/cases`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/contact`, changeFrequency: "yearly", priority: 0.6 },
   ];
 }
