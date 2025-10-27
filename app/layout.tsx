@@ -65,9 +65,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <GTMNoScript />
               <Header />
               <SkipLink />
-              {/* IMPORTANTE: id="main" para accesibilidad */}
               <main id="main" tabIndex={-1}>
-                <PageTransition>{children}</PageTransition>
+              <PageTransition>{children}</PageTransition>
               </main>
               <Footer />
               <CookieBanner />
