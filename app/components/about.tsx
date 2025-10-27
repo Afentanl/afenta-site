@@ -1,8 +1,10 @@
+// app/components/about.tsx
 "use client";
 
 import Link from "next/link";
 import { useLanguage } from "./language-provider";
 import Reveal from "./reveal";
+import { Search, PenTool, Rocket } from "lucide-react";
 
 const COPY = {
   en: {
@@ -21,10 +23,12 @@ const COPY = {
     cta: { primary: "Start a project", secondary: "View cases" },
     timelineTitle: "How we work",
     steps: [
-      { t: "Discover", d: "Goals, constraints & baseline analytics." },
-      { t: "Design & build", d: "Brand, system, and a fast web experience." },
-      { t: "Launch & scale", d: "Always-on growth: paid + CRO + reporting." },
+      { t: "Discover", d: "Goals, constraints & baseline analytics.", icon: Search },
+      { t: "Design & build", d: "Brand, system, and a fast web experience.", icon: PenTool },
+      { t: "Launch & scale", d: "Always-on growth: paid + CRO + reporting.", icon: Rocket },
     ],
+    micro: "Brand · Websites · Performance",
+    more: "More about us",
   },
   nl: {
     kicker: "Over ons",
@@ -42,10 +46,12 @@ const COPY = {
     cta: { primary: "Project starten", secondary: "Cases bekijken" },
     timelineTitle: "Onze werkwijze",
     steps: [
-      { t: "Discover", d: "Doelen, randvoorwaarden & baseline analytics." },
-      { t: "Design & build", d: "Merk, systeem en snelle web-experience." },
-      { t: "Launch & scale", d: "Always-on groei: paid + CRO + reporting." },
+      { t: "Discover", d: "Doelen, randvoorwaarden & baseline analytics.", icon: Search },
+      { t: "Design & build", d: "Merk, systeem en snelle web-experience.", icon: PenTool },
+      { t: "Launch & scale", d: "Always-on groei: paid + CRO + reporting.", icon: Rocket },
     ],
+    micro: "Brand · Websites · Performance",
+    more: "Meer over ons",
   },
 } as const;
 
@@ -54,37 +60,48 @@ export default function About({ variant = "home" }: { variant?: "home" | "page" 
   const t = COPY[lang as "en" | "nl"];
 
   return (
-    <section id={variant === "home" ? "about" : undefined} className="relative overflow-hidden py-18 md:py-24">
-      <div className="relative z-10 container-afenta">
-        {variant === "page" ? (
-          <header className="mb-8">
-            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
+    <section
+      id={variant === "home" ? "about" : undefined}
+      className={variant === "home" ? "py-18 md:py-24" : "section-divider py-16 md:py-24"}
+    >
+      <div className="container-afenta">
+        {/* Header (mismo estilo que Services) */}
+        <div className={`text-center ${variant === "home" ? "mb-10" : "mb-8"}`}>
+          <div className="inline-flex p-[1px] rounded-full bg-[conic-gradient(from_180deg_at_50%_50%,theme(colors.brand-violet),theme(colors.fuchsia),theme(colors.brand-gold),theme(colors.brand-violet))]">
+            <span className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-background/80 backdrop-blur ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
               {t.kicker}
-            </div>
-            <h1 className="mt-3 h-display text-3xl md:text-5xl font-black leading-[1.15]">{t.h2}</h1>
-            <p className="mt-3 text-[var(--color-muted)] max-w-[60ch]">{t.p}</p>
-          </header>
-        ) : (
-          <Reveal y={18}>
-            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-[var(--color-surface-2)] ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
-              {t.kicker}
-            </div>
-          </Reveal>
-        )}
+              <span className="inline-block h-1 w-1 rounded-full bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold animate-pulse" />
+            </span>
+          </div>
 
+          {variant === "page" ? (
+            <h1 className="mt-3 h-display text-3xl md:text-5xl font-black tracking-tight leading-tight">
+              <span className="bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold bg-clip-text text-transparent">
+                {t.h2}
+              </span>
+            </h1>
+          ) : (
+            <h2 className="mt-3 h-display text-3xl md:text-5xl font-black tracking-tight leading-tight">
+              <span className="bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold bg-clip-text text-transparent">
+                {t.h2}
+              </span>
+            </h2>
+          )}
+
+          <div className="mx-auto mt-4 h-[2px] w-28 rounded-full bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold shadow-[0_0_18px_rgba(124,58,237,.35)]" />
+
+          <p className="mt-4 text-base md:text-lg text-[var(--color-muted)] max-w-[60ch] mx-auto">
+            {t.p}
+          </p>
+
+          <p className="mt-2 text-xs md:text-sm text-[var(--color-muted)]">{t.micro}</p>
+        </div>
+
+        {/* Contenido */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start">
-          {/* izq */}
+          {/* Izquierda */}
           <div className="md:col-span-7">
-            {variant === "home" && (
-              <>
-                <Reveal y={18}><h2 className="h-display text-3xl md:text-5xl font-black leading-[1.15]">{t.h2}</h2></Reveal>
-                <Reveal y={18} delay={0.06}>
-                  <p className="mt-4 text-base md:text-lg text-[var(--color-muted)] max-w-[52ch]">{t.p}</p>
-                </Reveal>
-              </>
-            )}
-
-            <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {t.bullets.map((b, i) => (
                 <Reveal key={b} delay={i * 0.06} y={16}>
                   <li className="flex items-start gap-2 text-sm md:text-base">
@@ -96,18 +113,23 @@ export default function About({ variant = "home" }: { variant?: "home" | "page" 
             </ul>
 
             <Reveal y={16} delay={0.12}>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link href="#contact" className="btn-afenta-solid no-underline">{t.cta.primary}</Link>
-                <Link href="#cases" className="btn-afenta-solid no-underline">{t.cta.secondary}</Link>
+              <div className="mt-8 flex flex-wrap items-center gap-3 justify-start">
+                <Link href="/contact" className="btn-afenta-solid no-underline">
+                  {t.cta.primary}
+                </Link>
+                <Link href="/cases" className="btn-afenta-solid no-underline">
+                  {t.cta.secondary}
+                </Link>
                 <Link href="/about" className="btn-afenta-outline no-underline">
-                  {lang === "nl" ? "Meer over ons" : "More about us"}
+                  {t.more}
                 </Link>
               </div>
             </Reveal>
           </div>
 
-          {/* der */}
+          {/* Derecha */}
           <div className="md:col-span-5">
+            {/* KPIs */}
             <div className="grid grid-cols-3 gap-3">
               {([t.kpi1, t.kpi2, t.kpi3] as [string, string][]).map(([v, l], i) => (
                 <Reveal key={l} delay={i * 0.06} y={16}>
@@ -119,18 +141,27 @@ export default function About({ variant = "home" }: { variant?: "home" | "page" 
               ))}
             </div>
 
+            {/* Timeline */}
             <Reveal y={18} delay={0.12}>
               <div className="mt-6 rounded-2xl ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)]/70 backdrop-blur-sm p-5">
                 <div className="text-sm font-semibold mb-3">{t.timelineTitle}</div>
                 <ol className="relative pl-7 md:pl-8 space-y-4">
-                  <span aria-hidden className="pointer-events-none absolute left-3 md:left-3.5 top-0 bottom-0 w-px bg-[var(--color-ring)]" />
-                  {t.steps.map((s) => (
-                    <li key={s.t} className="relative pl-5">
-                      <span className="absolute left-0 top-2 h-3 w-3 rounded-full bg-gradient-to-r from-brand-violet via-fuchsia to-brand-gold" />
-                      <div className="font-semibold">{s.t}</div>
-                      <div className="text-sm text-[var(--color-muted)]">{s.d}</div>
-                    </li>
-                  ))}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute left-3 md:left-3.5 top-0 bottom-0 w-px bg-[var(--color-ring)]"
+                  />
+                  {t.steps.map((s) => {
+                    const Icon = s.icon ?? Search;
+                    return (
+                      <li key={s.t} className="relative pl-5">
+                        <span className="absolute left-0 top-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)]">
+                          <Icon className="h-3 w-3 text-[var(--color-foreground)]/80" aria-hidden />
+                        </span>
+                        <div className="font-semibold">{s.t}</div>
+                        <div className="text-sm text-[var(--color-muted)]">{s.d}</div>
+                      </li>
+                    );
+                  })}
                 </ol>
               </div>
             </Reveal>
