@@ -1,88 +1,97 @@
+// app/api/contact/route.ts
 import { NextResponse } from "next/server";
 
-// export const runtime = "edge"; // opcional
-
-type Payload = {
-  name?: string;
-  email?: string;
+// Tipado del payload que esperamos
+type LeadPayload = {
+  name: string;
+  email: string;
   budget?: string;
-  message?: string;
+  message: string;
+  services?: string;
+  startWhen?: string;
+  // antispam
+  company?: string;   // honeypot
+  _elapsed?: string;  // ms rellenados en el cliente
 };
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
-const EMAIL_FROM = process.env.EMAIL_FROM || "Afenta <no-reply@afenta.com>";
-const EMAIL_TO = process.env.EMAIL_TO || "";
-
-/* --------- Validaciones sin zod --------- */
-function isEmail(v: string) {
-  // simple, suficiente para validar formato
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+// Validaciones mínimas sin zod (para compilar sin deps)
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+function minLen(s: string, n: number) {
+  return (s ?? "").trim().length >= n;
 }
 
-function validate(p: Payload) {
-  const errors: string[] = [];
-
-  const name = (p.name || "").trim();
-  const email = (p.email || "").trim();
-  const message = (p.message || "").trim();
-  const budget = (p.budget || "").trim();
-
-  if (name.length < 2 || name.length > 100) errors.push("name");
-  if (!isEmail(email)) errors.push("email");
-  if (message.length < 10 || message.length > 5000) errors.push("message");
-  if (budget && budget.length > 120) errors.push("budget");
-
-  return { ok: errors.length === 0, errors, data: { name, email, message, budget } };
-}
-
-/* --------- Handlers --------- */
 export async function POST(req: Request) {
   try {
-    const body = (await req.json().catch(() => null)) as Payload | null;
-    if (!body) return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+    const data = (await req.json()) as Partial<LeadPayload>;
 
-    const v = validate(body);
-    if (!v.ok) {
-      return NextResponse.json({ ok: false, error: "Invalid fields", fields: v.errors }, { status: 400 });
+    // ---- validación básica
+    if (!data || !minLen(data.name ?? "", 2) || !isValidEmail(data.email ?? "") || !minLen(data.message ?? "", 4)) {
+      return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
     }
 
-    const { name, email, message, budget } = v.data;
-
-    // Si no hay claves → modo demo (no envía correo pero responde OK)
-    if (!RESEND_API_KEY || !EMAIL_TO) {
-      return NextResponse.json({ ok: true, demo: true });
+    // ---- antispam
+    if ((data.company ?? "").trim() !== "") {
+      // honeypot relleno → ignoramos en silencio
+      return NextResponse.json({ ok: true });
+    }
+    const elapsed = Number(data._elapsed ?? "0");
+    if (!Number.isNaN(elapsed) && elapsed < 5000) {
+      return NextResponse.json({ ok: false, error: "too_fast" }, { status: 400 });
     }
 
-    // Envío vía Resend (sin librerías)
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: EMAIL_FROM,
-        to: [EMAIL_TO],
-        subject: `New contact — ${name}`,
-        reply_to: email,
-        text:
-          `Name: ${name}\nEmail: ${email}\n` +
-          (budget ? `Budget: ${budget}\n` : "") +
-          `\n${message}`,
-    }),
-    });
+    // ---- construimos el texto del mail/log
+    const text = [
+      `Name: ${data.name}`,
+      `Email: ${data.email}`,
+      `Budget: ${data.budget || "-"}`,
+      `Services: ${data.services || "-"}`,
+      `Start: ${data.startWhen || "-"}`,
+      "",
+      "Message:",
+      data.message,
+    ].join("\n");
 
-    if (!res.ok) {
-      const txt = await res.text();
-      return NextResponse.json({ ok: false, error: txt || "Email send failed" }, { status: 500 });
+    // ---- Envío opcional vía API HTTP de Resend (sin SDK)
+    // Si no configuras RESEND_API_KEY, simplemente haremos console.log
+    const key = process.env.RESEND_API_KEY;
+    const to = (process.env.CONTACT_TO || "you@example.com")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    let sent = false;
+    if (key) {
+      try {
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "Afenta <no-reply@afenta.nl>",
+            to,
+            reply_to: data.email,
+            subject: `New lead — ${data.name}`,
+            text,
+          }),
+        });
+        if (res.ok) sent = true;
+        else console.error("Resend HTTP error:", await res.text());
+      } catch (e) {
+        console.error("Resend HTTP exception:", e);
+      }
+    }
+
+    if (!sent) {
+      console.log("[LEAD]", text);
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
-}
-
-export function GET() {
-  return NextResponse.json({ ok: true });
 }

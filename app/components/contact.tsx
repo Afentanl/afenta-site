@@ -1,7 +1,7 @@
 // app/components/contact.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { trackLead, dl } from "../lib/gtag";
 import { useLanguage } from "./language-provider";
 import { ServicesContent } from "../services-content";
@@ -47,7 +47,7 @@ export default function Contact() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
-  // Servicios (multi-select) desde tu contenido
+  // opciones desde tu ServicesContent
   const serviceOptions = useMemo(
     () => ServicesContent[lang as "en" | "nl"].map((s) => s.title),
     [lang]
@@ -57,24 +57,27 @@ export default function Contact() {
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<null | boolean>(null);
 
+  // timer para _elapsed (antispam)
+  const startedAtRef = useRef<number>(Date.now());
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
-    // 1) recolectar servicios (multi)
+    // multi-select de servicios
     const selectedServices = fd.getAll("services").map(String);
     fd.delete("services");
 
-    // 2) convertir FormData → Record<string, string> (sin any)
+    // convertir FormData -> Record<string,string> sin any
     const payload: Record<string, string> = {};
     fd.forEach((v, k) => {
       if (typeof v === "string") payload[k] = v;
-      // si algún día añades Files, aquí podrías decidir cómo serializarlos
     });
 
-    // 3) añadimos los campos calculados
     payload.services = selectedServices.join(", ");
     if (startWhen) payload.startWhen = startWhen;
+    // antispam: tiempo de formulario
+    payload._elapsed = String(Date.now() - startedAtRef.current);
 
     try {
       setLoading(true);
@@ -89,6 +92,7 @@ export default function Contact() {
         setOk(true);
         (e.target as HTMLFormElement).reset();
         setStartWhen("");
+        startedAtRef.current = Date.now();
         trackLead("form");
         dl("contact_submit_success");
       } else {
@@ -112,7 +116,7 @@ export default function Contact() {
   return (
     <section id="contact" className="relative py-16 md:py-24">
       <div className="container-afenta">
-        {/* Header con badge y puntico animado (igual que Services/About) */}
+        {/* header con badge igual al de Services/About */}
         <div className="mb-8 text-left">
           <div className="inline-flex p-[1px] rounded-full bg-[conic-gradient(from_180deg_at_50%_50%,theme(colors.brand-violet),theme(colors.fuchsia),theme(colors.brand-gold),theme(colors.brand-violet))]">
             <span className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs md:text-sm bg-background/80 backdrop-blur ring-1 ring-[var(--color-ring)] text-[var(--color-muted)]">
@@ -131,8 +135,18 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Form */}
+        {/* form */}
         <form onSubmit={onSubmit} className="grid grid-cols-1 gap-5 max-w-3xl">
+          {/* honeypot oculto (bots lo rellenan) */}
+          <input
+            type="text"
+            name="company"
+            autoComplete="off"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="hidden"
+          />
+
           {/* Name + Email */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -157,9 +171,9 @@ export default function Contact() {
             <input id="budget" name="budget" className={fieldBase} />
           </div>
 
-          {/* SERVICES — chips multi-select con colores de marca */}
-          <div className={boxBase}>
-            <span className="block text-sm font-semibold mb-2">{t.servicesQ}</span>
+          {/* SERVICES — chips multi-select con alto contraste */}
+          <fieldset className={boxBase}>
+            <legend className="block text-sm font-semibold mb-2">{t.servicesQ}</legend>
             <div className="flex flex-wrap gap-2">
               {serviceOptions.map((title, i) => {
                 const id = `svc-${i}`;
@@ -169,27 +183,27 @@ export default function Contact() {
                     <label
                       htmlFor={id}
                       className="
-                        inline-flex items-center gap-2 rounded-full px-3 py-1.5 cursor-pointer select-none
+                        group inline-flex items-center gap-2 rounded-full px-3 py-1.5 cursor-pointer select-none
                         ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)] text-[var(--color-foreground)]
-                        transition-colors
-                        hover:bg-[var(--color-surface-2)]
+                        transition-all hover:bg-[var(--color-surface-2)]
                         peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-brand-violet/70
-                        peer-checked:ring-brand-violet/70 peer-checked:text-brand-gold
+                        peer-checked:ring-brand-violet/70 peer-checked:shadow-[0_0_0_3px_rgba(124,58,237,.18)]
                       "
                     >
-                      {title}
+                      <svg className="h-3.5 w-3.5 -ml-1 opacity-0 transition-opacity peer-checked:opacity-100" viewBox="0 0 24 24" fill="none" aria-hidden>
+                        <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span className="font-medium">{title}</span>
                     </label>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </fieldset>
 
           {/* START — selector con borde de marca al elegir */}
-          <div className={boxBase}>
-            <label htmlFor="startWhen" className="block text-sm font-semibold mb-2">
-              {t.startQ}
-            </label>
+          <fieldset className={boxBase}>
+            <legend className="block text-sm font-semibold mb-2">{t.startQ}</legend>
             <select
               id="startWhen"
               value={startWhen}
@@ -197,12 +211,12 @@ export default function Contact() {
               name="startWhen"
               className={`${fieldBase} ${startWhen ? "ring-brand-violet/70" : ""}`}
             >
-              <option value="">{/* placeholder vacío */}—</option>
+              <option value="">{/* placeholder */}—</option>
               <option value={t.startNow}>{t.startNow}</option>
               <option value={t.startSoon}>{t.startSoon}</option>
               <option value={t.startLater}>{t.startLater}</option>
             </select>
-          </div>
+          </fieldset>
 
           {/* Message */}
           <div>
