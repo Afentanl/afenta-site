@@ -1,7 +1,6 @@
 // app/api/contact/route.ts
 import { NextResponse } from "next/server";
 
-// Tipado del payload que esperamos
 type LeadPayload = {
   name: string;
   email: string;
@@ -9,12 +8,10 @@ type LeadPayload = {
   message: string;
   services?: string;
   startWhen?: string;
-  // antispam
   company?: string;   // honeypot
   _elapsed?: string;  // ms rellenados en el cliente
 };
 
-// Validaciones mínimas sin zod (para compilar sin deps)
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -27,21 +24,28 @@ export async function POST(req: Request) {
     const data = (await req.json()) as Partial<LeadPayload>;
 
     // ---- validación básica
-    if (!data || !minLen(data.name ?? "", 2) || !isValidEmail(data.email ?? "") || !minLen(data.message ?? "", 4)) {
+    if (
+      !data ||
+      !minLen(data.name ?? "", 2) ||
+      !isValidEmail(data.email ?? "") ||
+      !minLen(data.message ?? "", 4)
+    ) {
       return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
     }
 
-    // ---- antispam
+    // ---- antispam (honeypot)
     if ((data.company ?? "").trim() !== "") {
-      // honeypot relleno → ignoramos en silencio
+      // bot rellenó el campo oculto
       return NextResponse.json({ ok: true });
     }
+
+    // ---- antispam por tiempo (si molesta para test, baja 5000 o coméntalo)
     const elapsed = Number(data._elapsed ?? "0");
     if (!Number.isNaN(elapsed) && elapsed < 5000) {
       return NextResponse.json({ ok: false, error: "too_fast" }, { status: 400 });
     }
 
-    // ---- construimos el texto del mail/log
+    // ---- cuerpo del email
     const text = [
       `Name: ${data.name}`,
       `Email: ${data.email}`,
@@ -53,15 +57,16 @@ export async function POST(req: Request) {
       data.message,
     ].join("\n");
 
-    // ---- Envío opcional vía API HTTP de Resend (sin SDK)
-    // Si no configuras RESEND_API_KEY, simplemente haremos console.log
     const key = process.env.RESEND_API_KEY;
-    const to = (process.env.CONTACT_TO || "you@example.com")
+    const to = (process.env.CONTACT_TO || "wilmrt12@gmail.com")
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const from = process.env.RESEND_FROM || "Afenta <onboarding@resend.dev>";
+
     let sent = false;
+
     if (key) {
       try {
         const res = await fetch("https://api.resend.com/emails", {
@@ -71,15 +76,19 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Afenta <no-reply@afenta.nl>",
+            from,
             to,
             reply_to: data.email,
             subject: `New lead — ${data.name}`,
             text,
           }),
         });
-        if (res.ok) sent = true;
-        else console.error("Resend HTTP error:", await res.text());
+
+        if (res.ok) {
+          sent = true;
+        } else {
+          console.error("Resend HTTP error:", await res.text());
+        }
       } catch (e) {
         console.error("Resend HTTP exception:", e);
       }
