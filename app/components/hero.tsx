@@ -449,7 +449,7 @@ export default function Hero() {
               transition={{ duration: 0.5, ease: [0.16, 0.84, 0.44, 1], delay: 0.45 }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <Link href="/contact" className="btn-afenta-solid no-underline">{t.primary}</Link>
+              <Link href="/start-project" className="btn-afenta-solid no-underline">{t.primary}</Link>
               <Link href="/cases"   className="btn-afenta-solid no-underline">{t.secondary}</Link>
               <Link href="/about"   className="btn-afenta-outline no-underline">{t.tertiary}</Link>
             </motion.div>

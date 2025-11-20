@@ -177,7 +177,7 @@ export default function Header() {
             <span className="hidden sm:inline">{!mounted ? "…" : theme === "dark" ? "Dark" : "Light"}</span>
           </button>
 
-          <Link href="/contact"><BtnSolidHeader>{t.cta}</BtnSolidHeader></Link>
+          <Link href="/start-project"><BtnSolidHeader>{t.cta}</BtnSolidHeader></Link>
         </div>
 
         {/* Botón móvil */}
@@ -220,7 +220,7 @@ export default function Header() {
                 </button>
               </div>
 
-              <Link href="/contact" className="mt-3 btn-afenta-solid text-center" onClick={() => setOpen(false)}>
+              <Link href="/start-project" className="mt-3 btn-afenta-solid text-center" onClick={() => setOpen(false)}>
                 {t.cta}
               </Link>
             </div>
