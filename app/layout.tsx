@@ -15,6 +15,7 @@ import SkipLink from "./components/skip-link";
 import FocusOnRoute from "./components/focus-on-route";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const metadata: Metadata = {
@@ -112,6 +113,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <Analytics />
         <SpeedInsights />
+        <Script
+          id="respondio__growth_tool"
+          src="https://cdn.respond.io/widget/widget.js?wId=fc63aa20-4d5f-4249-817d-bced93d1140e"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

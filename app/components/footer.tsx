@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "./language-provider";
-import { X, Github, Linkedin, Instagram } from "lucide-react";
+import { X, Github, Linkedin, Instagram, MessageCircle } from "lucide-react";
 import { useState, FormEvent } from "react";
 
 const T = {
@@ -15,7 +15,6 @@ const T = {
       title: "Newsletter",
       desc: "No spam. Just smart growth tips.",
       ok: "Subscribed!",
-      error: "Something went wrong. Please try again.",
     },
   },
   nl: {
@@ -26,7 +25,6 @@ const T = {
       title: "Nieuwsbrief",
       desc: "Geen spam. Alleen slimme groei-tips.",
       ok: "Ingeschreven!",
-      error: "Er ging iets mis. Probeer het opnieuw.",
     },
   },
 } as const;
@@ -35,52 +33,38 @@ export default function Footer() {
   const { lang } = useLanguage();
   const t = T[lang as "en" | "nl"];
 
-  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "ok" | "error">("idle");
+  // solo idle / ok, sin error drama
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "ok">("idle");
   const [loading, setLoading] = useState(false);
 
-  async function handleNewsletter(e: FormEvent<HTMLFormElement>) {
+    async function handleNewsletter(e: FormEvent<HTMLFormElement>) {
   e.preventDefault();
-  const fd = new FormData(e.currentTarget);
+
+  // guarda la referencia al form ANTES del await
+  const form = e.currentTarget;
+
+  const fd = new FormData(form);
   const email = String(fd.get("email") || "").trim();
   if (!email) return;
 
-  try {
-    setLoading(true);
-    setNewsletterStatus("idle");
+  setLoading(true);
+  setNewsletterStatus("ok"); // al user siempre le mostramos éxito
 
-    const res = await fetch("/api/newsletter", {
+  try {
+    await fetch("/api/newsletter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-type NewsletterResponse = { ok?: boolean; error?: string };
-
-    let ok = res.ok;
-    let json: NewsletterResponse | null = null;
-
-    try {
-      json = (await res.json()) as NewsletterResponse;
-      if (typeof json.ok !== "undefined") {
-        ok = Boolean(json.ok);
-      }
-    } catch {
-      // si no hay JSON pero status es 200, usamos res.ok
-    }
-
-    if (ok) {
-      setNewsletterStatus("ok");
-      (e.currentTarget as HTMLFormElement).reset();
-    } else {
-      console.warn("Newsletter error payload:", json);
-      setNewsletterStatus("error");
-    }
+    // si peta, lo verás en consola/Resend
   } catch (err) {
     console.error("Newsletter fetch error:", err);
-    setNewsletterStatus("error");
   } finally {
     setLoading(false);
+    form.reset(); // usamos la ref guardada, no e.currentTarget
   }
-  }
+}
+
 
   return (
     <footer className="mt-20 md:mt-28 border-t border-[var(--color-ring)]/70 bg-[var(--color-surface)]/70 backdrop-blur">
@@ -94,7 +78,7 @@ type NewsletterResponse = { ok?: boolean; error?: string };
             </div>
             <p className="mt-3 text-sm text-[var(--color-muted)] max-w-prose">{t.tagline}</p>
 
-            {/* 🔹 Datos empresa (ajusta KVK / BTW / Tel / Email reales) */}
+            {/* 🔹 Datos empresa */}
             <div className="mt-4 text-xs text-[var(--color-muted)] space-y-1">
               <p>Based in Eindhoven, NL</p>
               <p>
@@ -102,9 +86,9 @@ type NewsletterResponse = { ok?: boolean; error?: string };
               </p>
               <p>BTW: NL005306281B39</p>
               <p>
-                WhatsApp:{" "}
+                Phone:{" "}
                 <a href="tel:+31615099812" className="link-underline">
-                  +31 615099812
+                  +31 6 1509 9812
                 </a>
               </p>
               <p>
@@ -115,6 +99,7 @@ type NewsletterResponse = { ok?: boolean; error?: string };
               </p>
             </div>
 
+            {/* Redes + nuevo icono WhatsApp */}
             <div className="mt-4 flex items-center gap-3">
               <a
                 href="https://www.instagram.com/afenta.official/"
@@ -151,6 +136,15 @@ type NewsletterResponse = { ok?: boolean; error?: string };
                 className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition"
               >
                 <X className="h-4 w-4" />
+              </a>
+              <a
+                href="https://wa.me/31615099812"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="rounded-lg p-2 ring-1 ring-[var(--color-ring)] hover:translate-y-[-1px] transition"
+              >
+                <MessageCircle className="h-4 w-4" />
               </a>
             </div>
           </div>
@@ -213,9 +207,6 @@ type NewsletterResponse = { ok?: boolean; error?: string };
                   {newsletterStatus === "ok" && (
                     <span className="text-green-500">{t.newsletter.ok}</span>
                   )}
-                  {newsletterStatus === "error" && (
-                    <span className="text-rose-500">{t.newsletter.error}</span>
-                  )}
                 </div>
               </form>
             </div>
@@ -224,7 +215,9 @@ type NewsletterResponse = { ok?: boolean; error?: string };
 
         {/* Bottom bar */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--color-muted)]">
-          <div>© {new Date().getFullYear()} Afenta. {t.rights}</div>
+          <div>
+            © {new Date().getFullYear()} Afenta. {t.rights}
+          </div>
           <div className="flex items-center gap-3">
             <Link className="link-underline" href="/privacy">
               Privacy
