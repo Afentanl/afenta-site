@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */ 
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
@@ -8,7 +8,13 @@ import { useState, FormEvent } from "react";
 
 const T = {
   en: {
-    nav: { home: "Home", services: "Services", cases: "Cases", about: "About us", contact: "Contact" },
+    nav: {
+      home: "Home",
+      services: "Services",
+      cases: "Cases",
+      about: "About us",
+      contact: "Contact",
+    },
     tagline: "We turn vision into measurable growth.",
     rights: "All rights reserved.",
     newsletter: {
@@ -18,7 +24,13 @@ const T = {
     },
   },
   nl: {
-    nav: { home: "Home", services: "Diensten", cases: "Cases", about: "Over ons", contact: "Contact" },
+    nav: {
+      home: "Home",
+      services: "Diensten",
+      cases: "Cases",
+      about: "Over ons",
+      contact: "Contact",
+    },
     tagline: "Wij zetten visie om in meetbare groei.",
     rights: "Alle rechten voorbehouden.",
     newsletter: {
@@ -34,37 +46,38 @@ export default function Footer() {
   const t = T[lang as "en" | "nl"];
 
   // solo idle / ok, sin error drama
-  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "ok">("idle");
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "ok">(
+    "idle"
+  );
   const [loading, setLoading] = useState(false);
 
-    async function handleNewsletter(e: FormEvent<HTMLFormElement>) {
-  e.preventDefault();
+  async function handleNewsletter(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-  // guarda la referencia al form ANTES del await
-  const form = e.currentTarget;
+    // guarda la referencia al form ANTES del await
+    const form = e.currentTarget;
 
-  const fd = new FormData(form);
-  const email = String(fd.get("email") || "").trim();
-  if (!email) return;
+    const fd = new FormData(form);
+    const email = String(fd.get("email") || "").trim();
+    if (!email) return;
 
-  setLoading(true);
-  setNewsletterStatus("ok"); // al user siempre le mostramos éxito
+    setLoading(true);
+    setNewsletterStatus("ok"); // al user siempre le mostramos éxito
 
-  try {
-    await fetch("/api/newsletter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    // si peta, lo verás en consola/Resend
-  } catch (err) {
-    console.error("Newsletter fetch error:", err);
-  } finally {
-    setLoading(false);
-    form.reset(); // usamos la ref guardada, no e.currentTarget
+    try {
+      await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      // si peta, lo verás en consola/Resend
+    } catch (err) {
+      console.error("Newsletter fetch error:", err);
+    } finally {
+      setLoading(false);
+      form.reset(); // usamos la ref guardada, no e.currentTarget
+    }
   }
-}
-
 
   return (
     <footer className="mt-20 md:mt-28 border-t border-[var(--color-ring)]/70 bg-[var(--color-surface)]/70 backdrop-blur">
@@ -73,10 +86,16 @@ export default function Footer() {
           {/* Columna izquierda: brand + datos empresa + redes */}
           <div className="md:col-span-5">
             <div className="flex items-center gap-3">
-              <img src="/logo-afenta.png" alt="Afenta" className="h-10 w-10 rounded-xl" />
+              <img
+                src="/logo-afenta.png"
+                alt="Afenta"
+                className="h-10 w-10 rounded-xl"
+              />
               <div className="text-xl font-extrabold">Afenta</div>
             </div>
-            <p className="mt-3 text-sm text-[var(--color-muted)] max-w-prose">{t.tagline}</p>
+            <p className="mt-3 text-sm text-[var(--color-muted)] max-w-prose">
+              {t.tagline}
+            </p>
 
             {/* 🔹 Datos empresa */}
             <div className="mt-4 text-xs text-[var(--color-muted)] space-y-1">
@@ -178,7 +197,10 @@ export default function Footer() {
                 </Link>
               </div>
               <div>
-                <a href="/site.webmanifest" className="link-underline link-gradient">
+                <a
+                  href="/site.webmanifest"
+                  className="link-underline link-gradient"
+                >
                   PWA
                 </a>
               </div>
@@ -186,23 +208,32 @@ export default function Footer() {
           </nav>
 
           {/* Newsletter */}
-          <div className="md:col-span-3 text-sm">
-            <div className="rounded-2xl p-4 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)]">
+          <div className="md:col-span-3 text-sm min-w-0 w-full overflow-hidden">
+            <div className="rounded-2xl p-4 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface-2)] w-full">
               <div className="font-semibold mb-1">{t.newsletter.title}</div>
-              <p className="text-[var(--color-muted)] mb-3">{t.newsletter.desc}</p>
-              <form onSubmit={handleNewsletter}>
-                <div className="flex gap-2">
+              <p className="text-[var(--color-muted)] mb-3">
+                {t.newsletter.desc}
+              </p>
+
+              <form onSubmit={handleNewsletter} className="w-full">
+                <div className="flex items-center gap-2 w-full">
                   <input
                     required
                     type="email"
                     name="email"
                     placeholder="you@company.com"
-                    className="flex-1 rounded-lg px-3 py-2 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)]"
+                    className="flex-1 min-w-0 rounded-lg px-3 py-2 ring-1 ring-[var(--color-ring)] bg-[var(--color-surface)]"
                   />
-                  <button className="btn-afenta-solid" disabled={loading}>
+                  <button
+                    type="submit"
+                    className="btn-afenta-solid shrink-0 px-4 py-2"
+                    disabled={loading}
+                  >
                     {loading ? "…" : "OK"}
                   </button>
                 </div>
+
+                {/* Status message */}
                 <div className="mt-2 h-4 text-xs">
                   {newsletterStatus === "ok" && (
                     <span className="text-green-500">{t.newsletter.ok}</span>
